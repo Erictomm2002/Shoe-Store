@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "../navbar/Navbar";
 import "./Sale.scss";
-import { Link } from "react-router-dom";
-import shoe1 from "../../assets/images/nike02.jpeg";
-import nike from "../../assets/images/Giay-Air-Jordan-1-Retro-Hi-Premium-GS-Camo-822858-027.jpg";
 import Footer from "../footer/Footer";
 import ReactPaginate from "react-paginate";
 import { toast } from "react-toastify";
@@ -35,8 +32,8 @@ const SaleProduct = () => {
   return (
     <>
       <Navbar />
-      <div className="sale-product">
-        <div className="list">
+      <div className="flex flex-col gap-y-16 justify-center align-center mt-16">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-12 max-w-[1320px] mx-2">
           {getAllProductsSell?.length > 0 &&
             getAllProductsSell?.map((item, index) => {
               return (
@@ -53,15 +50,12 @@ const SaleProduct = () => {
             marginPagesDisplayed={4}
             pageCount={totalPages}
             previousLabel="< "
-            pageClassName="page-item"
-            pageLinkClassName="page-link"
-            previousLinkClassName="page-link"
-            nextClassName="page-item"
-            nextLinkClassName="page-link"
-            breakClassName="page-item"
-            breakLinkClassName="page-link"
-            containerClassName="pagination"
-            activeClassName="active"
+            containerClassName="flex justify-center items-center space-x-2"
+            pageClassName="px-3 py-1 rounded border border-2 hover:bg-gray-100 font-semibold"
+            activeClassName="bg-purple-600 text-white"
+            disabledClassName="text-gray-300 cursor-not-allowed"
+            previousClassName	={"text-gray-800 mr-1"}
+            nextClassName	={"text-gray-800 ml-1"}
           />
         </div>
       </div>

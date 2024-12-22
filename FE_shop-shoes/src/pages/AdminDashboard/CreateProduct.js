@@ -1,25 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import "./CreateProduct.scss";
-import Nav from "./Nav";
-import { convertBase64ToImage, getBase64 } from "../../assets/data/image";
+import {convertBase64ToImage, getBase64} from "../../assets/data/image";
 import Dropzone from "react-dropzone";
-import {
-  fetchAllSupplierNoLimit,
-  fetchSizeShoes,
-} from "../../service/userService";
-import { toast } from "react-toastify";
-import _, { set, values } from "lodash";
-import {
-  createProduct,
-  editProduct,
-  getOneProduct,
-} from "../../service/productService";
+import {fetchAllSupplierNoLimit, fetchSizeShoes,} from "../../service/userService";
+import {toast} from "react-toastify";
+import _ from "lodash";
+import {createProduct, editProduct, getOneProduct,} from "../../service/productService";
 import "react-quill/dist/quill.snow.css";
 import TextEditor from "../../components/TextEditor";
-import { useParams } from "react-router-dom";
+import {useParams} from "react-router-dom";
 
 const CreateProduct = () => {
-  const { id } = useParams();
+  const {id} = useParams();
 
   const [user, setUser] = useState({});
   useEffect(() => {
@@ -37,7 +29,7 @@ const CreateProduct = () => {
     let res = await getOneProduct(id);
     if (res && res.errCode === 0) {
       console.log(res.DT);
-      const { image, images, inventory, description, ...other } = res.DT;
+      const {image, images, inventory, description, ...other} = res.DT;
       setProduct({
         ...other,
         image: convertBase64ToImage(image),
@@ -92,7 +84,7 @@ const CreateProduct = () => {
   //handle single image
   const handleSingleImage = async (files) => {
     const base64Image = await getBase64(files[0]);
-    setProduct({ ...product, image: base64Image });
+    setProduct({...product, image: base64Image});
     console.log("check image: ", base64Image);
   };
 
@@ -101,7 +93,7 @@ const CreateProduct = () => {
     const base64Images = await Promise.all(
       files.map((file) => getBase64(file))
     );
-    setProduct({ ...product, images: base64Images });
+    setProduct({...product, images: base64Images});
     console.log("check images: ", base64Images);
   };
 
@@ -229,18 +221,23 @@ const CreateProduct = () => {
   };
 
   return (
-    <div className="create-product auto">
-      <Nav />
-      <div className="p-4 add-product">
-        <form className="row g-3 needs-validation">
-          <div className="col-md-12">
-            <label className="form-label" style={{ color: "black" }}>
+    <div className="create-product auto bg-gray-100">
+      {/*<Nav />*/}
+      <div className="bg-white rounded-lg shadow min-w-[1000px] w-1/2">
+        <div className="p-4 border-b">
+          <p className="text-gray-800 text-2xl font-semibold">
+            {id ? "Sửa sản phẩm" : "Thêm sản phẩm"}
+          </p>
+        </div>
+        <form className="p-4 space-y-6">
+          <div className="w-full">
+            <label className="form-label font-semibold" style={{color: "black"}}>
               Tên sản phẩm <span className="star">*</span>
             </label>
             <input
               type="text"
               placeholder="Nhập tên sản phẩm"
-              className="form-input"
+              className="w-[500px] max-w-md block border border-gray-300 rounded-md px-3 py-2 placeholder:text-sm"
               value={product.productName}
               onChange={(e) =>
                 handleOnchangeProduct(e.target.value, "productName")
@@ -249,25 +246,25 @@ const CreateProduct = () => {
           </div>
 
           <div className="col-md-4">
-            <label className="form-label" style={{ color: "black" }}>
+            <label className="form-label font-semibold" style={{color: "black"}}>
               Giá <span className="star">*</span>
             </label>
             <input
               type="text"
               placeholder="Nhập giá sản phẩm"
-              className="form-input"
+              className="w-[500px] max-w-md block border border-gray-300 rounded-md px-3 py-2 placeholder:text-sm"
               value={product.price}
               onChange={(e) => handleOnchangeProduct(e.target.value, "price")}
             />
           </div>
           <div className="col-md-4">
-            <label className="form-label" style={{ color: "black" }}>
+            <label className="form-label font-semibold" style={{color: "black"}}>
               Giảm giá (%)
             </label>
             <input
               type="text"
               placeholder="Nhập phần trăm giảm giá"
-              className="form-input"
+              className="w-[500px] max-w-md block border border-gray-300 rounded-md px-3 py-2 placeholder:text-sm"
               value={product.discount}
               onChange={(e) => {
                 if (e.target.value > 99) {
@@ -279,11 +276,11 @@ const CreateProduct = () => {
             />
           </div>
           <div className="col-md-4">
-            <label className="form-label" style={{ color: "black" }}>
+            <label className="form-label font-semibold" style={{color: "black"}}>
               Nhà cung cấp <span className="star">*</span>
             </label>
             <select
-              className="form-select"
+              className="w-[500px] max-w-md block border border-gray-300 rounded-md px-3 py-2 placeholder:text-sm"
               value={product?.supplier}
               onChange={(e) =>
                 handleOnchangeProduct(e.target.value, "supplier")
@@ -302,7 +299,7 @@ const CreateProduct = () => {
           </div>
 
           <div className="col-md-7">
-            <label className="form-label" style={{ color: "black" }}>
+            <label className="form-label font-semibold" style={{color: "black"}}>
               Mô tả
             </label>
             <TextEditor
@@ -312,11 +309,11 @@ const CreateProduct = () => {
             ></TextEditor>
           </div>
 
-          <div className="col-md-5">
-            <label className="form-label" style={{ color: "black" }}>
+          <div className="col-md-7">
+            <label className="form-label font-semibold" style={{color: "black"}}>
               Kích thước và số lượng <span className="star">*</span>
             </label>
-            <div className="size-shoes" style={{ color: "black" }}>
+            <div className="grid grid-cols-3" style={{color: "black"}}>
               {shoeSize.map((item, index) => {
                 return (
                   <div className="flex gap-2 mt-2 check-size" key={index}>
@@ -329,7 +326,7 @@ const CreateProduct = () => {
                     Size {item.sizeShoes}:
                     <input
                       type="number"
-                      className="border"
+                      className="border w-20 rounded-md"
                       value={
                         quantityInStock?.find(
                           (quantity) => quantity.sizeId === item.id
@@ -346,7 +343,7 @@ const CreateProduct = () => {
                             // Nếu item.id đã tồn tại trong mảng, cập nhật giá trị
                             prevQuantityInStock[
                               existingItemIndex
-                            ].quantityInStock = e.target.value;
+                              ].quantityInStock = e.target.value;
                             return [...prevQuantityInStock]; // Trả về mảng hiện tại
                           } else {
                             // Nếu item.id chưa tồn tại trong mảng, thêm một phần tử mới
@@ -368,8 +365,8 @@ const CreateProduct = () => {
             </div>
           </div>
 
-          <div className="col-md-6">
-            <label className="mt-3 form-label" style={{ color: "black" }}>
+          <div className="col-md-7">
+            <label className="mt-3 form-label font-semibold" style={{color: "black"}}>
               Ảnh <i className="fas fa-upload"></i>{" "}
               <span className="star">*</span>
             </label>
@@ -380,8 +377,8 @@ const CreateProduct = () => {
               // }}
               maxFiles={1}
             >
-              {({ getRootProps, getInputProps }) => (
-                <div {...getRootProps()} className="signle-image">
+              {({getRootProps, getInputProps}) => (
+                <div {...getRootProps()} className="w-full h-56 bg-stone-100 rounded-xl">
                   <input {...getInputProps()} />
                   {product?.image ? (
                     // eslint-disable-next-line jsx-a11y/img-redundant-alt
@@ -399,14 +396,16 @@ const CreateProduct = () => {
                       }
                     />
                   ) : (
-                    <p>Kéo và thả ảnh hoặc click để chọn ảnh</p>
+                    <div className="h-full flex justify-center items-center">
+                      <p className="text-gray-500 text-xl italic">Kéo và thả ảnh hoặc click để chọn ảnh</p>
+                    </div>
                   )}
                 </div>
               )}
             </Dropzone>
           </div>
-          <div className="col-md-6">
-            <label className="mt-3 form-label" style={{ color: "black" }}>
+          <div className="col-md-7">
+            <label className="mt-3 form-label font-semibold" style={{color: "black"}}>
               Tải ảnh của sản phẩm <i className="fas fa-upload"></i>{" "}
               <span className="star">*</span>
             </label>
@@ -418,8 +417,8 @@ const CreateProduct = () => {
               // }}
               multiple
             >
-              {({ getRootProps, getInputProps }) => (
-                <div {...getRootProps()} className="multiple-image">
+              {({getRootProps, getInputProps}) => (
+                <div {...getRootProps()} className="w-full h-56 bg-stone-100 rounded-xl">
                   <input {...getInputProps()} />
                   {product?.images.length > 0 ? (
                     product?.images.map((base64Image, index) => (
@@ -441,22 +440,24 @@ const CreateProduct = () => {
                       />
                     ))
                   ) : (
-                    <p>Kéo và thả ảnh hoặc click để chọn ảnh</p>
+                    <div className="h-full flex justify-center items-center">
+                      <p className="text-gray-500 text-xl italic">Kéo và thả ảnh hoặc click để chọn ảnh</p>
+                    </div>
                   )}
                 </div>
               )}
             </Dropzone>
           </div>
-          <div className="col-12">
-            <button
-              className="btn btn-primary"
-              type="submit"
-              onClick={(e) => handleSubmitProduct(e)}
-            >
-              {id ? "Sửa sản phẩm" : "Thêm sản phẩm"}
-            </button>
-          </div>
         </form>
+        <div className="col-12 bg-gray-100 flex justify-center items-center py-3">
+          <button
+            className="py-2 px-6 rounded-md bg-indigo-600"
+            type="submit"
+            onClick={(e) => handleSubmitProduct(e)}
+          >
+            {id ? "Sửa sản phẩm" : "Thêm sản phẩm"}
+          </button>
+        </div>
       </div>
     </div>
   );

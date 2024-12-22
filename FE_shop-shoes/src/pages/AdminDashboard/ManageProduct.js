@@ -1,29 +1,25 @@
 import React, { useEffect, useState } from "react";
-import "./ManageProduct.scss";
-import Nav from "./Nav";
-import { Table } from "react-bootstrap";
-import ReactPaginate from "react-paginate";
 import { AiFillDelete } from "react-icons/ai";
 import { BiEdit } from "react-icons/bi";
-import { deleteProduct, getAllProduct } from "../../service/productService";
 import { toast } from "react-toastify";
-import { convertBase64ToImage } from "../../assets/data/image";
-import { NavLink } from "react-router-dom";
 import Swal from "sweetalert2";
-import _, { cloneDeep, debounce } from "lodash";
+import ReactPaginate from "react-paginate";
+import { NavLink } from "react-router-dom";
+import { deleteProduct, getAllProduct } from "../../service/productService";
+import { convertBase64ToImage } from "../../assets/data/image";
 import { fetchAllSupplierNoLimit } from "../../service/userService";
 
 const ManageProduct = () => {
   const [getProduct, setGetProduct] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [currentLimit] = useState(4);
+  const [currentLimit] = useState(10);
   const [totalPages, setTotalPages] = useState(0);
   const [listBrand, setListBrand] = useState([]);
   const [supplierSort, setSupplierSort] = useState("");
   const [search, setSearch] = useState("");
 
   const getAllProducts = async () => {
-    let res = await getAllProduct(
+    const res = await getAllProduct(
       currentPage,
       currentLimit,
       supplierSort,
@@ -38,12 +34,14 @@ const ManageProduct = () => {
     } else {
       toast.error(res.errMessage);
     }
-    console.log("Check data: ", getProduct);
   };
 
-  useEffect(() => {
-    getAllProducts();
-  }, [currentPage, search, supplierSort]);
+  const fetchBrand = async () => {
+    const res = await fetchAllSupplierNoLimit();
+    if (res && res.errCode === 0) {
+      setListBrand(res.DT);
+    }
+  };
 
   const handleDeleteProduct = (id) => {
     Swal.fire({
@@ -71,177 +69,123 @@ const ManageProduct = () => {
     setCurrentPage(+event.selected + 1);
   };
 
-  // const handleProductSearch = debounce((event) => {
-  //   let search = event.target.value;
-  //   if (search) {
-  //     let productSearch = cloneDeep(getProduct);
-
-  //     productSearch = productSearch.filter((item) =>
-  //       item.productName.toLowerCase().includes(_.toLower(search))
-  //     );
-  //     setGetProduct(productSearch);
-  //   } else {
-  //     getAllProducts(currentPage);
-  //   }
-  // });
-
-  const fetchBrand = async () => {
-    const res = await fetchAllSupplierNoLimit();
-    if (res && res.errCode === 0) {
-      setListBrand(res.DT);
-    }
-  };
+  useEffect(() => {
+    getAllProducts();
+  }, [currentPage, search, supplierSort]);
 
   useEffect(() => {
     fetchBrand();
   }, []);
 
-  // const slug = window.location.pathname.split("/")[2];
-
-  // useEffect(() => {
-  //   if (slug) {
-  //     setSupplierSort(slug);
-  //   }
-  // }, [slug]);
-
-  // const handleProductSort = (value, name) => {
-  //   let _dataProduct = _.cloneDeep(supplierSort);
-  //   _dataProduct[name] = value;
-  //   setSupplierSort(_dataProduct);
-  // };
-
   return (
-    <div className="manage-product auto">
-      <Nav />
-      <div className="content-product">
-        <div className="product-search">
-          <div className="product__filter">
-            <h5>Search:</h5>
-            <input
-              type="text"
-              onChange={(e) => {
-                setSearch(e.target.value);
-              }}
-              placeholder="tìm kiếm"
-            />
+    <div className="manage-product w-full mx-auto p-6 bg-gray-50 font-sans">
+      <div className="bg-white rounded-lg shadow">
+        {/* Header Section */}
+        <div className="p-4 border-b flex flex-col lg:flex-row items-start justify-between">
+          <div className="">
+            <p className="text-2xl font-semibold text-gray-800">Quản lý sản phẩm</p>
+            <p className="text-gray-500 text-base -mt-2">Quản lý thông tin sản phẩm và thực hiện các hành động chỉnh sửa
+              hoặc xóa.</p>
           </div>
-          <div className="product__sort">
-            <h5>Lọc</h5>
+
+          {/* Filter Dropdown */}
+          <div className="gap-2 w-full sm:w-auto">
+            <div className="font-semibold text-sm text-gray-700">Lọc theo nhà cung cấp</div>
             <select
-              className="sort__band"
-              // value={supplierSort}
+              className="border border-gray-300 rounded-lg px-4 py-2 shadow-sm focus:ring-blue-500 focus:outline-none"
               onChange={(e) => setSupplierSort(e.target.value)}
             >
               <option value="default" disabled selected>
-                --- chọn ---
+                --- Chọn ---
               </option>
               {listBrand?.length > 0 &&
-                listBrand?.map((item, index) => {
-                  return (
-                    <option
-                      key={item?.id}
-                      value={item?.name}
-                      // onClick={() => setSupplierSort(item?.name)}
-                    >
-                      {item?.name}
-                    </option>
-                  );
-                })}
-              {/* <option value="CANCEL">Đã Hủy</option> */}
+                listBrand.map((item) => (
+                  <option key={item?.id} value={item?.name}>
+                    {item?.name}
+                  </option>
+                ))}
             </select>
           </div>
         </div>
 
-        <Table bordered hover>
-          <thead>
+        {/* Filter and Search */}
+        {/* Search Input */}
+        <div className="flex items-center gap-3 w-full sm:w-auto">
+          <input
+            type="text"
+            placeholder="Tìm kiếm theo tên sản phẩm"
+            className="flex-1 sm:w-64 px-4 py-3 shadow-sm focus:ring-blue-500 focus:outline-none"
+            onChange={(e) => setSearch(e.target.value.trim())}
+          />
+        </div>
+
+        {/* Table */}
+        <div className="overflow-x-auto bg-white border-y">
+          <table className="min-w-full text-sm text-left text-gray-700">
+            <thead className="bg-gray-100 text-gray-900">
             <tr>
-              <th>STT</th>
-              <th>Tên </th>
-              <th>Ảnh</th>
-              <th>Giá</th>
-              <th>Giảm giá(%)</th>
-              <th>Số lượng</th>
-              <th>Hành động</th>
+              <th className="px-4 py-3 font-semibold text-base"></th>
+              <th className="px-4 py-3 font-semibold text-base">Tên sản phẩm</th>
+              <th className="px-4 py-3 font-semibold text-base">Giá</th>
+              <th className="px-4 py-3 font-semibold text-base">Giảm giá (%)</th>
+              <th className="px-4 py-3 font-semibold text-base">Số lượng</th>
+              <th className="px-4 py-3 font-semibold text-base">Hành động</th>
             </tr>
-          </thead>
-          <tbody>
+            </thead>
+            <tbody>
             {getProduct?.length > 0 &&
-              getProduct?.map((item, index) => {
-                return (
-                  <tr key={item?.id}>
-                    <td>
-                      {currentPage * currentLimit - currentLimit + index + 1}
-                    </td>
-                    <td>{item?.productName}</td>
-                    <td>
-                      <img
-                        src={convertBase64ToImage(item?.image)}
-                        alt=""
-                        style={{
-                          height: "100px",
-                          width: "150px",
-                          objectFit: "cover",
-                        }}
-                      />
-                    </td>
-                    <td>{item?.price}đ</td>
-                    <td>{item?.discount}</td>
-                    <td>
-                      {item?.inventories?.reduce(
-                        (accumulator, currentValue) => {
-                          return (
-                            accumulator + parseInt(currentValue.quantityInStock)
-                          );
-                        },
-                        0
-                      )}
-                    </td>
-                    <td>
-                      <NavLink
-                        to={`/admin/edit-product/${item?.id}`}
-                        className="mx-3 btn btn-primary"
-                      >
-                        <BiEdit />
-                      </NavLink>
-                      <button
-                        className="btn btn-danger"
-                        onClick={() => {
-                          handleDeleteProduct(item?.id);
-                        }}
-                      >
-                        <AiFillDelete />
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-          </tbody>
-        </Table>
-        <nav
-          className="pageination is-centered"
-          // key={currentPage}
-          role="navigation"
-          aria-label="pagination"
-        >
+              getProduct.map((item, index) => (
+                <tr
+                  key={item?.id}
+                  className="border-b last:border-0 hover:bg-gray-50"
+                >
+                  <td className="px-4 py-3">{currentPage * currentLimit - currentLimit + index + 1}</td>
+                  <td className="px-4 py-3">{item?.productName}</td>
+                  <td className="px-4 py-3">{item?.price}đ</td>
+                  <td className="px-4 py-3">{item?.discount}</td>
+                  <td className="px-4 py-3">
+                    {item?.inventories?.reduce(
+                      (acc, current) => acc + parseInt(current.quantityInStock),
+                      0
+                    )}
+                  </td>
+                  <td className="px-4 py-3 flex items-center gap-2">
+                    <NavLink
+                      to={'/admin/edit-product/${item?.id}'}
+                      className="px-3 py-2 bg-indigo-500 text-white rounded-md hover:bg-blue-600"
+                    >
+                      <BiEdit/>
+                    </NavLink>
+                    <button
+                      onClick={() => handleDeleteProduct(item?.id)}
+                      className="px-3 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+                    >
+                      <AiFillDelete/>
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Pagination */}
+        <div className="mt-6 flex justify-center">
           <ReactPaginate
             breakLabel="..."
             nextLabel=" >"
             onPageChange={handlePageClick}
             pageRangeDisplayed={3}
-            marginPagesDisplayed={4}
+            marginPagesDisplayed={2}
             pageCount={totalPages}
             previousLabel="< "
-            pageClassName="page-item"
-            pageLinkClassName="page-link"
-            previousLinkClassName="page-link"
-            nextClassName="page-item"
-            nextLinkClassName="page-link"
-            breakClassName="page-item"
-            breakLinkClassName="page-link"
-            containerClassName="pagination"
-            activeClassName="active"
+            containerClassName="flex items-center gap-2"
+            pageClassName="border border-gray-300 px-3 py-1 rounded-md cursor-pointer"
+            activeClassName="bg-indigo-500 text-white"
+            previousClassName="border text-indigo-500 border-gray-300 px-3 py-1 rounded-md cursor-pointer"
+            nextClassName="border border-gray-300 px-3 py-1 rounded-md cursor-pointer"
           />
-        </nav>
+        </div>
       </div>
     </div>
   );

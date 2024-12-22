@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import Nav from "./Nav";
-import "./ManageOrder.scss";
-import "./ManageOrder.css";
 import { Table } from "react-bootstrap";
 import { FaMoneyBillAlt } from "react-icons/fa";
 import ReactPaginate from "react-paginate";
@@ -58,11 +56,9 @@ const ManageOrder = () => {
     } else {
       toast.error(res.errMessage);
     }
-    console.log("Check: ", res);
   };
 
   const handleUpdateOrder = async (id, value) => {
-    console.log(id);
     let res = await updateOrder(id, { status: value });
     if (res && res.errCode === 0) {
       toast.success("Cập nhật thành công");
@@ -87,7 +83,6 @@ const ManageOrder = () => {
     let term = event.target.value;
     if (term) {
       let searchData = cloneDeep(getOrders);
-
       searchData = searchData.filter((item) => item.email.includes(term));
       setGetOrders(searchData);
     } else {
@@ -95,184 +90,175 @@ const ManageOrder = () => {
     }
   }, 100);
 
-  // console.log(getOrders);
   return (
-    <div className="manage-order">
+    <div className="p-4 bg-gray-100 w-full">
       <Nav />
-      <div className="main-order">
-        <div className="main-card">
-          <div className="card">
-            <div className="card-inner">
-              <h3>Đơn đặt hàng</h3>
-              <FaMoneyBillAlt className="card_icon" />
+      <div className="space-y-8">
+        {/* Cards */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="bg-white shadow-md rounded-lg p-4 flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-semibold">Đơn đặt hàng</h3>
+              <FaMoneyBillAlt className="text-2xl text-gray-500" />
             </div>
-            <h1>{dataManage?.totalOrders}</h1>
+            <h1 className="text-4xl font-bold">{dataManage?.totalOrders}</h1>
           </div>
-
-          <div className="card">
-            <div className="card-inner">
-              <h3>Đơn chờ duyệt</h3>
-              <FaMoneyBillAlt className="card_icon" />
+          <div className="bg-white shadow-md rounded-lg p-4 flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-semibold">Đơn chờ duyệt</h3>
+              <FaMoneyBillAlt className="text-2xl text-gray-500" />
             </div>
-            <h1>{dataManage?.totalOrdersPending}</h1>
+            <h1 className="text-4xl font-bold">{dataManage?.totalOrdersPending}</h1>
           </div>
-
-          {/* <div className="order-search">
-            Tìm kiếm:
-            <input
-              type="text"
-              onChange={(event) => handleSearch(event)}
-              placeholder="tìm kiếm"
-            />
-          </div> */}
         </div>
-        <div className="content-order">
-          <div className="title-order">
-            <h3>Đơn hàng đang xử lý</h3>
-            <div
-              className="filter-order"
-              onClick={() => {
-                setSortByName(!sortByName);
-              }}
-            >
-              Lọc
-              <BiMenuAltLeft />
+
+        {/* Table Section */}
+        <div className="bg-white shadow-md rounded-lg">
+          <div className="flex justify-between items-center p-4">
+            <div>
+              <p className="text-2xl font-semibold">Đơn hàng đang xử lý</p>
+              <p className="text-sm text-gray-400 -mt-3">Khu vực xử lý các đơn hàng của toàn bộ hệ thống</p>
             </div>
+            <button
+              className="flex items-center text-sm bg-blue-500 text-white py-2 px-4 rounded"
+              onClick={() => setSortByName(!sortByName)}
+            >
+              Lọc <BiMenuAltLeft className="ml-2 text-lg"/>
+            </button>
           </div>
 
-          <Table bordered hover>
-            <thead>
-              <tr>
-                <th>Mã</th>
-                <th>Khách hàng</th>
-                <th>Email</th>
-                <th>Số điện thoại</th>
-                <th>Ngày Đặt</th>
-                <th>Trạng Thái</th>
-                <th>Hành Động</th>
-              </tr>
+          <table className="min-w-full text-sm text-left text-gray-700">
+            <thead className="bg-gray-100 text-gray-900">
+            <tr>
+              <th className="px-4 py-3 font-semibold text-base">Mã</th>
+              <th className="px-4 py-3 font-semibold text-base">Khách hàng</th>
+              <th className="px-4 py-3 font-semibold text-base">Email</th>
+              <th className="px-4 py-3 font-semibold text-base">Số điện thoại</th>
+              <th className="px-4 py-3 font-semibold text-base">Ngày Đặt</th>
+              <th className="px-4 py-3 font-semibold text-base">Trạng Thái</th>
+              <th className="px-4 py-3 font-semibold text-base">Hành Động</th>
+            </tr>
             </thead>
             <tbody>
-              {getOrders?.length > 0 &&
-                getOrders?.map((item, index) => {
-                  const createdAtDate = new Date(item?.createdAt);
-                  const formattedDate = `${createdAtDate.getDate()}/${
-                    createdAtDate.getMonth() + 1
-                  }/${createdAtDate.getFullYear()} ${createdAtDate.getHours()}:${
-                    createdAtDate.getMinutes() < 10
-                      ? "0" + createdAtDate.getMinutes()
-                      : createdAtDate.getMinutes()
-                  }`;
-                  return (
-                    <tr key={item?.id}>
-                      <td className="code-order">
-                        <button onClick={handleClick}>#{item?.id}</button>
-                      </td>
-                      <td>{item?.username}</td>
-                      <td>{item?.email}</td>
-                      <td>{item?.phone}</td>
-                      <td>{formattedDate}</td>
-                      <td>
-                        <select
-                          name="status"
-                          id="status"
-                          disabled={
-                            item?.status === "SUCCESS" ||
-                            item?.status === "CANCEL"
-                          }
-                          className="w-full h-[100%] border-none outline-none"
-                          // value={item?.status}
-                          defaultValue={item?.status}
-                          onChange={(e) => {
-                            handleUpdateOrder(item?.id, e.target.value);
-                          }}
-                        >
-                          <option value="PENDING">Chờ xác nhận</option>
-                          <option value="CONFIRM">Chờ lấy hàng</option>
-                          <option value="SHIPPING">Đang giao hàng</option>
-                          <option value="SUCCESS">Đã giao</option>
-                          <option value="CANCEL">Đã Hủy</option>
-                        </select>
-                      </td>
-                      <td>
-                        <button
-                          className="mx-3 btn btn-primary"
-                          onClick={() => handleEditOrder(item)}
-                        >
-                          <BiEdit />
-                        </button>
-                        <button
-                          className="btn btn-danger"
-                          onClick={async () => {
-                            // await deleteOrder(item?.id);
-                            // fectchDtManage();
-                            // setGetOrders(
-                            //   getOrders.filter((x) => x.id !== item.id)
-                            // );
+            {getOrders?.map((item) => {
+              const createdAtDate = new Date(item?.createdAt);
+              const formattedDate = `${createdAtDate.getDate()}/${
+                createdAtDate.getMonth() + 1
+              }/${createdAtDate.getFullYear()} ${createdAtDate.getHours()}:${
+                createdAtDate.getMinutes() < 10
+                  ? "0" + createdAtDate.getMinutes()
+                  : createdAtDate.getMinutes()
+              }`;
 
-                            Swal.fire({
-                              title: "Bạn có muốn xóa?",
-                              text: "Đơn hàng có thể xóa vĩnh viễn!",
-                              icon: "warning",
-                              showCancelButton: true,
-                              confirmButtonColor: "#3085d6",
-                              cancelButtonColor: "#d33",
-                              confirmButtonText: "Xóa",
-                            }).then(async (result) => {
-                              if (result.isConfirmed) {
-                                try {
-                                  await deleteOrder(item?.id);
-                                  fectchDtManage();
-                                  setGetOrders(
-                                    getOrders.filter((x) => x.id !== item.id)
-                                  );
-                                  Swal.fire(
-                                    "Đã xóa!",
-                                    "Bạn đã xóa thành công!",
-                                    "success"
-                                  );
-                                } catch (e) {
-                                  Swal.fire("Error", e, "error");
-                                }
-                              }
-                            });
-                          }}
-                        >
-                          <AiFillDelete />
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
+              return (
+                <tr
+                  key={item?.id}
+                  className="border-b last:border-0 hover:bg-gray-50"
+                >
+                  <td className="px-4 py-3">
+                    <button
+                      className="text-blue-500 hover:underline"
+                      onClick={handleClick}
+                    >
+                      #{item?.id}
+                    </button>
+                  </td>
+                  <td className="px-4 py-3">{item?.username}</td>
+                  <td className="px-4 py-3">{item?.email}</td>
+                  <td className="px-4 py-3">{item?.phone}</td>
+                  <td className="px-4 py-3">{formattedDate}</td>
+                  <td className="px-4 py-3">
+                    <select
+                      className="border border-gray-300 rounded w-full p-2"
+                      disabled={
+                        item?.status === "SUCCESS" ||
+                        item?.status === "CANCEL"
+                      }
+                      defaultValue={item?.status}
+                      onChange={(e) =>
+                        handleUpdateOrder(item?.id, e.target.value)
+                      }
+                    >
+                      <option value="PENDING">Chờ xác nhận</option>
+                      <option value="CONFIRM">Chờ lấy hàng</option>
+                      <option value="SHIPPING">Đang giao hàng</option>
+                      <option value="SUCCESS">Đã giao</option>
+                      <option value="CANCEL">Đã Hủy</option>
+                    </select>
+                  </td>
+                  <td className="px-4 py-3 flex items-center gap-2">
+                    <button
+                      className="mr-2 bg-blue-500 text-white p-2 rounded"
+                      onClick={() => handleEditOrder(item)}
+                    >
+                      <BiEdit/>
+                    </button>
+                    <button
+                      className="bg-red-500 text-white p-2 rounded"
+                      onClick={() => {
+                        Swal.fire({
+                          title: "Bạn có muốn xóa?",
+                          text: "Đơn hàng có thể xóa vĩnh viễn!",
+                          icon: "warning",
+                          showCancelButton: true,
+                          confirmButtonColor: "#3085d6",
+                          cancelButtonColor: "#d33",
+                          confirmButtonText: "Xóa",
+                        }).then(async (result) => {
+                          if (result.isConfirmed) {
+                            try {
+                              await deleteOrder(item?.id);
+                              fectchDtManage();
+                              setGetOrders(
+                                getOrders.filter((x) => x.id !== item.id)
+                              );
+                              Swal.fire(
+                                "Đã xóa!",
+                                "Bạn đã xóa thành công!",
+                                "success"
+                              );
+                            } catch (e) {
+                              Swal.fire("Error", e, "error");
+                            }
+                          }
+                        });
+                      }}
+                    >
+                      <AiFillDelete/>
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
             </tbody>
-          </Table>
-          <ReactPaginate
-            breakLabel="..."
-            nextLabel=" >"
-            onPageChange={handlePageClick}
-            pageRangeDisplayed={3}
-            marginPagesDisplayed={4}
-            pageCount={totalPages}
-            previousLabel="< "
-            pageClassName="page-item"
-            pageLinkClassName="page-link"
-            previousLinkClassName="page-link"
-            nextClassName="page-item"
-            nextLinkClassName="page-link"
-            breakClassName="page-item"
-            breakLinkClassName="page-link"
-            containerClassName="pagination"
-            activeClassName="active"
+          </table>
+
+          <div className="mt-6 flex justify-center">
+            <ReactPaginate
+              breakLabel="..."
+              nextLabel=" >"
+              onPageChange={handlePageClick}
+              pageRangeDisplayed={3}
+              marginPagesDisplayed={4}
+              pageCount={totalPages}
+              previousLabel="< "
+              containerClassName="flex items-center gap-2"
+              pageClassName="border border-gray-300 px-3 py-1 rounded-md cursor-pointer"
+              activeClassName="bg-indigo-500 text-white"
+              previousClassName="border text-indigo-500 border-gray-300 px-3 py-1 rounded-md cursor-pointer"
+              nextClassName="border border-gray-300 px-3 py-1 rounded-md cursor-pointer"
+            />
+          </div>
+          </div>
+
+          <ModalOrder
+            show={isShowModalOrder}
+            handleClose={handleClose}
+            valueModal={valueModal}
           />
         </div>
-        <ModalOrder
-          show={isShowModalOrder}
-          handleClose={handleClose}
-          valueModal={valueModal}
-        />
       </div>
-    </div>
-  );
-};
+      );
+      };
 
-export default ManageOrder;
+      export default ManageOrder;

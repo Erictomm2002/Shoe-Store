@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { Banner, Navbar, Features, HomeProduct, Footer } from "../components";
 import Swal from "sweetalert2";
 import axios from "axios";
+import TopBanner from "../components/top-banner/top-banner";
 
 function HomePage() {
   const queryParams = new URLSearchParams(window.location.search);
@@ -56,7 +57,8 @@ function HomePage() {
     }
   }, [orderId]);
   return (
-      <div className="bg-gray-50 w-full">
+      <div className="w-full">
+        <TopBanner />
         <Navbar/>
         <Banner/>
         <Features/>

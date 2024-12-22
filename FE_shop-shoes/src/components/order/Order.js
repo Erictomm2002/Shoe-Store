@@ -1,12 +1,11 @@
-import React, { Suspense, useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import Navbar from "../navbar/Navbar";
 import "./Order.scss";
-import { convertBase64ToImage } from "../../assets/data/image";
-import { createOrder, getAllProductInCart } from "../../service/productService";
-import { toast } from "react-toastify";
-import { useSelector } from "react-redux";
-import Button from "react-bootstrap/Button";
-import Modal from "react-bootstrap/Modal";
+import {convertBase64ToImage} from "../../assets/data/image";
+import {createOrder} from "../../service/productService";
+import {toast} from "react-toastify";
+import {useSelector} from "react-redux";
+import TopBanner from "../top-banner/top-banner";
 
 const Order = () => {
   const cartProducts = useSelector((state) => state.cart.cartProducts.data);
@@ -26,27 +25,62 @@ const Order = () => {
     ward: "string",
   });
   const [openModalBank, setOpenModalBank] = useState(false);
+  const [user, setUser] = useState({});
+
   useEffect(() => {
     const chooseProduct = localStorage.getItem("chooseProduct");
-
     if (chooseProduct) {
       setOrderProduct([JSON.parse(chooseProduct)]);
     }
-  }, []);
-  const [user, setUser] = useState({});
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
 
+    const storedUser = localStorage.getItem("user");
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
-  }, []);
 
-  useEffect(() => {
     return () => {
       localStorage.removeItem("chooseProduct");
     };
   }, []);
+
+  useEffect(() => {
+    const init = detailOrder?.deliveryType === "FAST" ? 65000 : 45000;
+
+    if (orderProduct?.length > 0) {
+      setDetailOrder({
+        ...detailOrder,
+        userId: user?.id,
+        username: user?.username,
+        email: user?.email,
+        phone: user?.phone,
+        addressDetail: user?.addressDetails,
+        totalMoney:
+          parseInt(orderProduct[0]?.price) *
+          (orderProduct[0]?.discount
+            ? (100 - parseInt(orderProduct[0]?.discount)) / 100
+            : 1) *
+          parseInt(orderProduct[0]?.quantity) +
+          init,
+      });
+    } else {
+      setDetailOrder({
+        ...detailOrder,
+        userId: user?.id,
+        username: user?.username,
+        email: user?.email,
+        phone: user?.phone,
+        addressDetail: user?.addressDetails,
+        totalMoney: cartProducts?.reduce(
+          (accumulator, currentValue) =>
+            accumulator +
+            parseInt(currentValue?.price) *
+            ((100 - parseInt(currentValue?.discount || 0)) / 100) *
+            currentValue?.quantity,
+          init
+        ),
+      });
+    }
+  }, [detailOrder.deliveryType, orderProduct, cartProducts, user]);
 
   const handleCreateOrder = async (e) => {
     e.preventDefault();
@@ -95,6 +129,7 @@ const Order = () => {
       await handleSubmit();
     }
   };
+
   const handleSubmit = async () => {
     try {
       await createOrder({
@@ -112,372 +147,227 @@ const Order = () => {
     }
   };
 
-  useEffect(() => {
-    const init = detailOrder?.deliveryType === "FAST" ? 65000 : 45000;
-
-    if (orderProduct?.length > 0) {
-      setDetailOrder({
-        ...detailOrder,
-        userId: user?.id,
-        username: user?.username,
-        email: user?.email,
-        phone: user?.phone,
-        addressDetail: user?.addressDetails,
-        totalMoney:
-          parseInt(orderProduct[0]?.price) *
-            (orderProduct[0]?.discount
-              ? (100 - parseInt(orderProduct[0]?.discount)) / 100
-              : 1) *
-            parseInt(orderProduct[0]?.quantity) +
-          init,
-      });
-      return;
-    } else {
-      setDetailOrder({
-        ...detailOrder,
-        userId: user?.id,
-        username: user?.username,
-        email: user?.email,
-        phone: user?.phone,
-        addressDetail: user?.addressDetails,
-        totalMoney: cartProducts?.reduce(
-          (accumulator, currentValue) =>
-            accumulator +
-            parseInt(currentValue?.price) *
-              ((100 - parseInt(currentValue?.discount || 0)) / 100) *
-              currentValue?.quantity,
-          init
-        ),
-      });
-    }
-  }, [detailOrder.deliveryType, orderProduct, cartProducts, user]);
-
   return (
-    <Suspense>
-      <Navbar />
-      <Modal
-        show={openModalBank}
-        onHide={() => {
-          setOpenModalBank(false);
-        }}
-        // className="modal-order"
-      >
-        <Modal.Header closeButton>
-          <Modal.Title id="contained-modal-title-vcenter">
-            Thông tin thanh toán
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div className="flex items-center justify-center w-full flex-col">
-            <img src="/qrcode.png" alt="" className="w-52 h-52" />
-            <div className="flex flex-col gap-2 items-start">
-              <span>Ngân hàng: Vietcombank</span>
-              <span>Số tài khoản: 0123455678</span>
-              <span>Tên chủ tài khoản: NGUYEN VAN A</span>
-              <span>
-                Số tiền:{" "}
-                {detailOrder?.totalMoney.toLocaleString("vi", {
-                  style: "currency",
-                  currency: "VND",
-                })}
-              </span>
-            </div>
-          </div>
-        </Modal.Body>
-        <Modal.Footer>
-          {/* <Button onClick={props.onHide}>Lưu</Button> */}
-          <Button
-            onClick={() => {
-              setOpenModalBank(false);
-            }}
-          >
-            Hủy
-          </Button>
-          <Button variant="secondary" onClick={handleSubmit}>
-            Xác nhận đã thanh toán
-          </Button>
-        </Modal.Footer>
-      </Modal>
-      <div className="order">
-        <h2 className="title">Đăt hàng</h2>
-        <div className="content-order">
-          <div className="content-left">
-            <form className="row g-3 needs-validation">
-              <div className="col-md-12">
-                <label className="form-label">
-                  Người nhận <span>*</span>
-                </label>
-                <input
-                  type="text"
-                  className="form-input"
-                  value={detailOrder?.username}
-                  onChange={(e) => {
-                    setDetailOrder({
-                      ...detailOrder,
-                      username: e.target.value,
-                    });
-                  }}
-                />
-              </div>
-
-              <div className="col-md-12">
-                <label className="form-label">
-                  Email <span>*</span>
-                </label>
-                <input
-                  type="email"
-                  className="form-input"
-                  value={detailOrder?.email}
-                  onChange={(e) => {
-                    setDetailOrder({ ...detailOrder, email: e.target.value });
-                  }}
-                />
-              </div>
-
-              <div className="col-md-12">
-                <label className="form-label">
-                  Điện thoại <span>*</span>
-                </label>
-                <input
-                  type="text"
-                  className="form-input"
-                  value={detailOrder?.phone}
-                  onChange={(e) => {
-                    setDetailOrder({ ...detailOrder, phone: e.target.value });
-                  }}
-                />
-              </div>
-
-              <div className="col-md-12">
-                <label className="form-label">
-                  Địa chỉ <span>*</span>
-                </label>
-                <input
-                  type="text"
-                  className="form-input"
-                  value={detailOrder?.addressDetail}
-                  onChange={(e) => {
-                    setDetailOrder({
-                      ...detailOrder,
-                      addressDetail: e.target.value,
-                    });
-                  }}
-                />
-              </div>
-
-              <div className="col-md-12">
-                <label className="form-label">Ghi chú</label>
-                <textarea
-                  name="description"
-                  id="description"
-                  rows="6"
-                  className="p-2 border w-100"
-                  onChange={(e) =>
-                    setDetailOrder({ ...detailOrder, note: e.target.value })
-                  }
-                ></textarea>
-              </div>
-            </form>
-          </div>
-          <div className="middle-content">
-            <label className="form-label">Giao hàng</label>
-            <div className="delivery">
-              <ul>
-                <li>
-                  <input
-                    type="radio"
-                    name="selected"
-                    value="65000"
-                    onChange={(e) =>
-                      setDetailOrder({
-                        ...detailOrder,
-                        deliveryType: "FAST",
-                      })
-                    }
-                  />
-                  <label>
-                    Giao hàng nhanh trong ngày:
-                    <span>65.000₫</span>
+    <div className="bg-gray-100 min-h-screen">
+      <TopBanner/>
+      <Navbar/>
+      <div className="mt-8">
+        <div className="container mx-auto px-4">
+          <h2 className="text-2xl font-bold mb-6">Đặt hàng</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-y-2 gap-x-6">
+            <div className="md:col-span-2">
+              <form className="bg-white shadow-md rounded px-8 pt-4 pb-3 mb-4">
+                <p className="text-xl font-semibold mb-4">Thông tin nhận hàng</p>
+                <div className="mb-4">
+                  <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="username">
+                    Người nhận <span className="text-red-500">*</span>
                   </label>
-                </li>
-                <li>
                   <input
-                    type="radio"
-                    name="selected"
-                    value="45000"
-                    defaultChecked
-                    onChange={(e) =>
-                      setDetailOrder({
-                        ...detailOrder,
-                        deliveryType: "STANDARD",
-                      })
-                    }
+                    type="text"
+                    id="username"
+                    className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none"
+                    value={detailOrder?.username}
+                    onChange={(e) => setDetailOrder({...detailOrder, username: e.target.value})}
                   />
-                  <label>
-                    Giao hàng tiêu chuẩn(3-5 ngày toàn quốc):
-                    <span>45.000₫</span>
+                </div>
+                <div className="mb-4">
+                  <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
+                    Email <span className="text-red-500">*</span>
                   </label>
-                </li>
-              </ul>
+                  <input
+                    type="email"
+                    id="email"
+                    className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none"
+                    value={detailOrder?.email}
+                    onChange={(e) => setDetailOrder({...detailOrder, email: e.target.value})}
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="phone">
+                    Điện thoại <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    id="phone"
+                    className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none"
+                    value={detailOrder?.phone}
+                    onChange={(e) => setDetailOrder({...detailOrder, phone: e.target.value})}
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="address">
+                    Địa chỉ <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    id="address"
+                    className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none"
+                    value={detailOrder?.addressDetail}
+                    onChange={(e) => setDetailOrder({...detailOrder, addressDetail: e.target.value})}
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="note">
+                    Ghi chú
+                  </label>
+                  <textarea
+                    id="note"
+                    rows={4}
+                    className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none"
+                    onChange={(e) => setDetailOrder({...detailOrder, note: e.target.value})}
+                  ></textarea>
+                </div>
+              </form>
+
+              <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+                <h3 className="text-lg font-semibold mb-4">Giao hàng</h3>
+                <div className="space-y-2">
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      name="delivery"
+                      value="FAST"
+                      checked={detailOrder.deliveryType === "FAST"}
+                      onChange={() => setDetailOrder({...detailOrder, deliveryType: "FAST"})}
+                      className="mr-2"
+                    />
+                    <span>Giao hàng nhanh trong ngày: <span className="font-semibold">65.000₫</span></span>
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      name="delivery"
+                      value="STANDARD"
+                      checked={detailOrder.deliveryType === "STANDARD"}
+                      onChange={() => setDetailOrder({...detailOrder, deliveryType: "STANDARD"})}
+                      className="mr-2"
+                    />
+                    <span>Giao hàng tiêu chuẩn (3-5 ngày toàn quốc): <span
+                      className="font-semibold">45.000₫</span></span>
+                  </label>
+                </div>
+              </div>
+
+              <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+                <h3 className="text-lg font-semibold mb-4">Thanh toán</h3>
+                <div className="space-y-2">
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      name="payment"
+                      value="COD"
+                      checked={detailOrder.paymentType === "COD"}
+                      onChange={() => setDetailOrder({...detailOrder, paymentType: "COD"})}
+                      className="mr-2"
+                    />
+                    <span>Thanh toán khi nhận hàng (COD)</span>
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      name="payment"
+                      value="BANK"
+                      checked={detailOrder.paymentType === "BANK"}
+                      onChange={() => setDetailOrder({...detailOrder, paymentType: "BANK"})}
+                      className="mr-2"
+                    />
+                    <span>Chuyển khoản ngân hàng</span>
+                  </label>
+                </div>
+                <p className="mt-4 text-sm text-gray-600">
+                  <strong>Chú ý:</strong> Sau khi đặt hàng thành công vào email kiểm tra lại đơn hàng của bạn. Cảm ơn
+                  bạn đã đặt hàng tại Shoes
+                </p>
+              </div>
             </div>
 
-            <label className="form-label">Thanh toán</label>
-            <div className="delivery">
-              <ul>
-                <li>
-                  <input
-                    type="radio"
-                    name="paied"
-                    defaultChecked
-                    onChange={() =>
-                      setDetailOrder({
-                        ...detailOrder,
-                        paymentType: "COD",
-                      })
-                    }
-                  />
-                  <label>Thanh toán khi nhận hàng (COD)</label>
-                </li>
-                <li>
-                  <input
-                    type="radio"
-                    name="paied"
-                    onChange={() =>
-                      setDetailOrder({
-                        ...detailOrder,
-                        paymentType: "BANK",
-                      })
-                    }
-                  />
-                  <label>Chuyển khoản ngân hàng</label>
-                </li>
-
-                <li>
-                  <p>
-                    <strong>Chú ý:</strong>Sau khi đặt hàng thành công vào email
-                    kiểm tra lại đơn hàng của bạn. Cảm ơn bạn đã đặt hàng tại
-                    Shoes
-                  </p>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className="content-right">
-            <label className="form-label">Đơn hàng của bạn</label>
-            <tbody className="order-review">
-              {orderProduct?.length > 0 ? (
-                <tr className="cart-item">
-                  <td className="product-name">
-                    <div className="p-1 product-thumbnail">
+            <div className="md:col-span-1">
+              <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+                <h3 className="text-lg font-semibold mb-4">Đơn hàng của bạn</h3>
+                <div className="space-y-8">
+                  {(orderProduct?.length > 0 ? orderProduct : cartProducts).map((item, index) => (
+                    <div key={index} className="flex items-start">
                       <img
-                        src={convertBase64ToImage(orderProduct[0]?.image)}
-                        alt=""
-                        className="w-[100%] h-[100%] object-cover"
+                        src={convertBase64ToImage(item?.image)}
+                        alt={item?.productName}
+                        className="w-16 h-16 object-cover rounded-md mr-4"
                       />
-                    </div>
-                    <div className="product-desc">
-                      <span>{orderProduct[0]?.productName}&nbsp;</span>
-                      <strong className="product-quantity">
-                        &nbsp;× {orderProduct[0]?.quantity}
-                      </strong>
-                      <dl className="variation-price">
-                        <dt className="variation">
-                          Kích thước:{" "}
-                          {orderProduct[0]?.sizeId === 1
-                            ? "36"
-                            : orderProduct[0]?.sizeId === 2
-                            ? "37"
-                            : orderProduct[0]?.sizeId === 3
-                            ? "38"
-                            : orderProduct[0]?.sizeId === 4
-                            ? "39"
-                            : orderProduct[0]?.sizeId === 5
-                            ? "40"
-                            : orderProduct[0]?.sizeId === 6
-                            ? "41"
-                            : "42"}
-                        </dt>
-                        <dd className="price" style={{ float: "right" }}>
-                          <bdi>
-                            {Math.round(
-                              parseInt(orderProduct[0]?.price) *
-                                parseInt(orderProduct[0]?.quantity) *
-                                (orderProduct[0]?.discount
-                                  ? (100 -
-                                      parseInt(orderProduct[0]?.discount)) /
-                                    100
-                                  : 1)
-                            ).toLocaleString("vi-VN")}
-                            ₫
-                          </bdi>
-                        </dd>
-                      </dl>
-                    </div>
-                  </td>
-                </tr>
-              ) : (
-                cartProducts.map((item, key) => (
-                  <tr className="cart-item" key={key}>
-                    <td className="product-name">
-                      <div className="p-1 product-thumbnail">
-                        <img
-                          src={convertBase64ToImage(item?.image)}
-                          alt=""
-                          className="w-[100%] h-[100%] object-cover"
-                        />
+                      <div className="space-y-1.5">
+                        <p className="font-medium line-clamp-2 max-w-60 -mb-0.5">{item?.productName}</p>
+                        <p className="text-sm text-gray-500">
+                          Số lượng: {item?.quantity} | Kích thước: {item?.size || item?.sizeId}
+                        </p>
+                        <p className="text-sm font-semibold">
+                          {Math.round(
+                            parseInt(item?.price) *
+                            parseInt(item?.quantity) *
+                            (item?.discount ? (100 - parseInt(item?.discount)) / 100 : 1)
+                          ).toLocaleString("vi-VN")}
+                          ₫
+                        </p>
                       </div>
-                      <div className="product-desc">
-                        <span>{item?.productName}&nbsp;</span>
-                        <strong className="product-quantity">
-                          &nbsp;× {item?.quantity}
-                        </strong>
-                        <dl className="variation-price">
-                          <dt className="variation">Size: {item?.size}</dt>
-                          <dd className="price" style={{ float: "right" }}>
-                            <bdi>
-                              {Math.round(
-                                parseInt(item?.price) *
-                                  parseInt(item?.quantity) *
-                                  (item?.discount
-                                    ? (100 - parseInt(item?.discount)) / 100
-                                    : 1)
-                              ).toLocaleString("vi-VN")}
-                              ₫
-                            </bdi>
-                          </dd>
-                        </dl>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-
-            <div className="order-total">
-              Phí ship:{" "}
-              {detailOrder?.deliveryType === "FAST" ? (
-                <span>65.000₫</span>
-              ) : (
-                <span>45.000₫</span>
-              )}
-            </div>
-            <div className="text-lg font-semibold order-total">
-              Tổng:{" "}
-              {Math.round(detailOrder?.totalMoney)?.toLocaleString("vi-VN")}₫
-            </div>
-            <div className="payment">
-              <button
-                onClick={(e) => {
-                  handleCreateOrder(e);
-                }}
-              >
-                Đặt hàng
-              </button>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-6 border-t pt-4">
+                  <div className="flex justify-between mb-2">
+                    <span>Phí ship:</span>
+                    <span>{detailOrder?.deliveryType === "FAST" ? "65.000₫" : "45.000₫"}</span>
+                  </div>
+                  <div className="flex justify-between font-semibold text-lg">
+                    <span>Tổng:</span>
+                    <span>{Math.round(detailOrder?.totalMoney)?.toLocaleString("vi-VN")}₫</span>
+                  </div>
+                </div>
+                <button
+                  onClick={handleCreateOrder}
+                  className="mt-6 w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-300"
+                >
+                  Đặt hàng
+                </button>
+              </div>
             </div>
           </div>
         </div>
+
+        {openModalBank && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white p-8 rounded-lg max-w-md w-full">
+              <h2 className="text-xl font-bold mb-4">Thông tin thanh toán</h2>
+              <div className="flex flex-col items-center mb-4">
+                <img src="/qrcode.png" alt="QR Code" className="w-52 h-52 mb-4"/>
+                <div className="space-y-2 text-left w-full">
+                  <p>Ngân hàng: Vietcombank</p>
+                  <p>Số tài khoản: 0123455678</p>
+                  <p>Tên chủ tài khoản: NGUYEN VAN A</p>
+                  <p>
+                    Số tiền:{" "}
+                    {detailOrder?.totalMoney.toLocaleString("vi", {
+                      style: "currency",
+                      currency: "VND",
+                    })}
+                  </p>
+                </div>
+              </div>
+              <div className="flex justify-end space-x-4">
+                <button
+                  onClick={() => setOpenModalBank(false)}
+                  className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition duration-300"
+                >
+                  Hủy
+                </button>
+                <button
+                  onClick={handleSubmit}
+                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition duration-300"
+                >
+                  Xác nhận đã thanh toán
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
-    </Suspense>
+    </div>
   );
 };
 

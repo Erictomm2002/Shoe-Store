@@ -23,14 +23,14 @@ const AdminLayout = ({ children }) => {
   useEffect(() => {
     // Kiểm tra xem có thông tin người dùng trong Local Storage không
     const storedUser = localStorage.getItem("user");
-
-    if (!storedUser) {
-      window.location.href = "/login";
-    }
-    // Nếu có, chuyển đổi chuỗi JSON thành đối tượng và cập nhật state
-    if (storedUser) {
+    //
+    // if (!storedUser) {
+    //   window.location.href = "/login";
+    // }
+    // // Nếu có, chuyển đổi chuỗi JSON thành đối tượng và cập nhật state
+    // if (storedUser) {
       setUser(JSON.parse(storedUser));
-    }
+    // }
   }, []);
   const toggle = () => setOpen(!isOpen);
 
@@ -72,9 +72,9 @@ const AdminLayout = ({ children }) => {
     <>
       <div className="main-container">
         <motion.div
-          className="sidebar"
+          className="sidebar lg:py-3 lg:px-4 bg-stone-800"
           animate={{
-            width: isOpen ? "220px" : "38px",
+            width: isOpen ? "350px" : "70px",
             transition: {
               duration: 0.5,
               type: "spring",
@@ -85,36 +85,19 @@ const AdminLayout = ({ children }) => {
           <div className="top_section">
             {isOpen && (
               <motion.h1
-                className="logo"
+                className="text-xl"
                 initial="hidden"
                 animate="show"
                 exit="hidden"
                 variants={inputAnimation}
               >
-                SHOP_SHOES
+                Shop Shoe
               </motion.h1>
             )}
             <div className="bars">
               <FaBars onClick={toggle} />
             </div>
           </div>
-          {/* <div className="search">
-            <div className="search_icon">
-              <BiSearch />
-            </div>
-            <AnimatePresence>
-              {isOpen && (
-                <motion.input
-                  initial="hidden"
-                  animate="show"
-                  exit="hidden"
-                  variants={inputAnimation}
-                  type="text"
-                  placeholder="Search..."
-                />
-              )}
-            </AnimatePresence>
-          </div> */}
           <section className="routes">
             {routes.map((route, index) => {
               if (route.subRoutes) {
@@ -134,7 +117,7 @@ const AdminLayout = ({ children }) => {
               return (
                 <>
                   <NavLink
-                    className="link"
+                    className="p-2 flex text-white items-center gap-3"
                     activeclassname="active"
                     onMouseDown={() => {
                       if (route.path === "/settings/profile") logout();
@@ -142,11 +125,11 @@ const AdminLayout = ({ children }) => {
                     to={route.path}
                     key={index}
                   >
-                    <div className="icon">{route.icon}</div>
+                    <div className="icon scale-125">{route.icon}</div>
                     {isOpen && (
                       <AnimatePresence>
                         <motion.div
-                          className="link_text"
+                          className="text-lg font-sans"
                           initial="hidden"
                           animate="show"
                           exit="hidden"

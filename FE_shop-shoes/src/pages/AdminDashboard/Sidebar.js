@@ -54,12 +54,12 @@ const Sidebar = ({ route, showAnimation, isOpen, setOpen }) => {
   return (
     <>
       <div className="menu" onClick={toggleMenu}>
-        <div className="menu_item">
-          <div className="icon">{route.icon}</div>
+        <div className="menu_item flex text-white items-center gap-3">
+          <div className="icon scale-125">{route.icon}</div>
           <AnimatePresence>
             {isOpen && (
               <motion.div
-                className="link_text"
+                className="link_text text-lg font-sans"
                 initial="hidden"
                 animate="show"
                 exit="hidden"
@@ -88,16 +88,17 @@ const Sidebar = ({ route, showAnimation, isOpen, setOpen }) => {
             {route.subRoutes.map((subRoute, idx) => (
               <motion.div key={idx} variants={menuItemAnimation} custom={idx}>
                 {subRoute?.name === "Đăng xuất" ? (
-                  <button className="w-full link" onClick={() => logout()}>
+                  <button className="w-full flex" onClick={() => logout()}>
                     <div className="icon">{subRoute.icon}</div>
-                    <motion.div className="link_text">
+                    <motion.div className="ml-8 text-white text-base px-2 py-2.5 rounded-md hover:text-gray-700 hover:bg-stone-100">
                       {subRoute.name}
                     </motion.div>
                   </button>
                 ) : (
-                  <NavLink to={subRoute.path} className="link">
-                    <div className="icon">{subRoute.icon}</div>
-                    <motion.div className="link_text">
+                  <NavLink to={subRoute.path} className="">
+                    <div className="">{subRoute.icon}</div>
+                    <motion.div
+                      className="ml-8 text-base px-2 py-2.5 rounded-md hover:text-gray-700 text-white hover:border ">
                       {subRoute.name}
                     </motion.div>
                   </NavLink>

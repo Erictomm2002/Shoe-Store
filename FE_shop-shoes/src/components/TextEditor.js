@@ -22,6 +22,7 @@ const TextEditor = ({ placeholder, description, setDescription }) => {
         formats={TextEditor.formats}
         bounds={".app"}
         placeholder={placeholder}
+        className={'border overflow-hidden rounded-lg'}
       />
     </div>
   );

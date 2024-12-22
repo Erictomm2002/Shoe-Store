@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from "react";
-import Nav from "./Nav";
-import { Button, Table } from "react-bootstrap";
-import { AiFillDelete } from "react-icons/ai";
-import { BiEdit, BiMenuAltLeft } from "react-icons/bi";
+import React, {useEffect, useState} from "react";
+import {Button} from "react-bootstrap";
+import {AiFillDelete} from "react-icons/ai";
+import {BiEdit, BiMenuAltLeft} from "react-icons/bi";
 import ReactPaginate from "react-paginate";
-import { ModalDeleteSupplier, ModalSupplier } from "../../components";
-import { deleteSupplier, fetchAllSupplier } from "../../service/userService";
-import { toast } from "react-toastify";
+import {ModalDeleteSupplier, ModalSupplier} from "../../components";
+import {deleteSupplier, fetchAllSupplier} from "../../service/userService";
+import {toast} from "react-toastify";
 
 const Supplier = () => {
   //create
@@ -74,85 +73,87 @@ const Supplier = () => {
   };
 
   return (
-    <div className="manage-user auto">
-      <Nav />
-      <div className="content-user">
-        <div className="title-user">
-          <div className="add-user">
-            <Button
+    <div className="p-4 bg-gray-100 w-full">
+      <div className="bg-white border rounded-lg">
+        <div className="flex items-center justify-between p-4">
+          <p className="text-2xl text-gray-800 font-semibold">Nhà cung cấp</p>
+          <div className="flex items-center gap-4">
+            <div className="add-user">
+              <Button
+                onClick={() => {
+                  setIsShowModal(true);
+                  setActionModal("CREATE");
+                }}
+              >
+                <i className="fa-solid fa-circle-plus"></i> Thêm
+              </Button>
+            </div>
+            <div
+              className="filter-user"
+              style={{color: "black"}}
               onClick={() => {
-                setIsShowModal(true);
-                setActionModal("CREATE");
+                setSortByName(!sortByName);
               }}
             >
-              <i className="fa-solid fa-circle-plus"></i> Thêm
-            </Button>
-          </div>
-          <div
-            className="filter-user"
-            style={{ color: "black" }}
-            onClick={() => {
-              setSortByName(!sortByName);
-            }}
-          >
-            Lọc
-            <BiMenuAltLeft />
+              Lọc
+              <BiMenuAltLeft/>
+            </div>
           </div>
         </div>
-        <Table bordered hover>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Tên nhà cung cấp</th>
-              <th>Email</th>
-              <th>Số điện thoại</th>
-              <th>Địa chỉ</th>
-
-              <th>Hành Động</th>
-            </tr>
+        <table className="min-w-full text-sm text-left text-gray-700 border-b">
+          <thead className="bg-gray-100 text-gray-900">
+          <tr>
+            <th className="px-4 py-3 font-semibold text-base">#</th>
+            <th className="px-4 py-3 font-semibold text-base">Tên nhà cung cấp</th>
+            <th className="px-4 py-3 font-semibold text-base">Email</th>
+            <th className="px-4 py-3 font-semibold text-base">Số điện thoại</th>
+            <th className="px-4 py-3 font-semibold text-base">Địa chỉ</th>
+            <th className="px-4 py-3 font-semibold text-base">Hành Động</th>
+          </tr>
           </thead>
           <tbody>
-            {listSupplier && listSupplier.length > 0 ? (
-              <>
-                {listSupplier.map((item, index) => {
-                  return (
-                    <tr key={`row-${index}`}>
-                      {/* <td>{index + 1}</td> */}
-                      <td>{(currentPage - 1) * currentLimit + index + 1}</td>
-                      <td>{item.name}</td>
-                      <td>{item.email}</td>
-                      <td>{item.phone}</td>
-                      <td>{item.address}</td>
+          {listSupplier && listSupplier.length > 0 ? (
+            <>
+              {listSupplier.map((item, index) => {
+                return (
+                  <tr className="border-b last:border-0 hover:bg-gray-50"
+                      key={`row-${index}`}>
+                    {/* <td>{index + 1}</td> */}
+                    <td className="px-4 py-3">{(currentPage - 1) * currentLimit + index + 1}</td>
+                    <td className="px-4 py-3">{item.name}</td>
+                    <td className="px-4 py-3">{item.email}</td>
+                    <td className="px-4 py-3">{item.phone}</td>
+                    <td className="px-4 py-3">{item.address}</td>
 
-                      <td>
-                        <button
-                          className="mx-3 btn btn-primary"
-                          onClick={() => handleEditSupplier(item)}
-                        >
-                          <BiEdit />
-                        </button>
-                        <button
-                          className="btn btn-danger"
-                          onClick={() => handleDeleteSupplier(item)}
-                        >
-                          <AiFillDelete />
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </>
-            ) : (
-              <>
-                <tr>
-                  <td>Không có dữ liệu</td>
-                </tr>
-              </>
-            )}
+                    <td className="px-4 py-3 flex items-center gap-2">
+                      <button
+                        className="mx-3 btn btn-primary"
+                        onClick={() => handleEditSupplier(item)}
+                      >
+                        <BiEdit/>
+                      </button>
+                      <button
+                        className="btn btn-danger"
+                        onClick={() => handleDeleteSupplier(item)}
+                      >
+                        <AiFillDelete/>
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </>
+          ) : (
+            <>
+              <tr>
+                <td>Không có dữ liệu</td>
+              </tr>
+            </>
+          )}
           </tbody>
-        </Table>
+        </table>
         {totalPages > 0 && (
-          <div className="footer">
+          <div className="col-12 bg-gray-50 flex justify-end items-center py-3 px-4">
             <ReactPaginate
               breakLabel="..."
               nextLabel=" >"

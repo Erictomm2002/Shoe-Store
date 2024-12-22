@@ -54,7 +54,6 @@ function App() {
           <Route path="/order" element={<Order />} />
           <Route path="/info-account" element={<InfoAccount />} />
           <Route path="/sale-product" element={<SaleProduct />} />
-          <Route path="/accessory" element={<Accessory />} />
           <Route path="/contact" element={<Contact />} />
 
           {/*ADMIN */}
@@ -79,10 +78,10 @@ function App() {
               element={<ManageNotification />}
             />
           </Route> */}
-          {!isAdmin(user) && (
+          {/*{!isAdmin(user) && (*/}
             <Route path="/admin" element={<Navigate to="/" />} />
-          )}
-          {isAdmin(user) && (
+          {/*)}*/}
+          {/*{isAdmin(user) && (*/}
             <Route path="/admin" element={<AdminLayout />}>
               <Route path="home" element={<Home />} />
               <Route path="manage-user" element={<ManageCustomer />} />
@@ -97,7 +96,7 @@ function App() {
                 element={<ManageNotification />}
               />
             </Route>
-          )}
+          {/*// )}*/}
 
           {/* ) : (
             

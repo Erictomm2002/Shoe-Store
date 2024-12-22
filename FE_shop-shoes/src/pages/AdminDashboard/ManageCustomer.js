@@ -1,17 +1,10 @@
-import React, { useEffect, useState } from "react";
-import Nav from "./Nav";
+import React, {useEffect, useState} from "react";
 import "./ManageUser.scss";
-import { Button, Table } from "react-bootstrap";
-import { AiFillDelete } from "react-icons/ai";
-import { BiEdit, BiMenuAltLeft } from "react-icons/bi";
-import { toast } from "react-toastify";
-import {
-  createCustomer,
-  deleteUser,
-  editCustomer,
-  getCustomer,
-  getOneCustomer,
-} from "../../service/userService";
+import {Button, Table} from "react-bootstrap";
+import {AiFillDelete} from "react-icons/ai";
+import {BiEdit, BiMenuAltLeft} from "react-icons/bi";
+import {toast} from "react-toastify";
+import {createCustomer, deleteUser, editCustomer, getCustomer, getOneCustomer,} from "../../service/userService";
 import Swal from "sweetalert2";
 import ReactPaginate from "react-paginate";
 
@@ -49,8 +42,8 @@ const ManageCustomer = () => {
   }, [show, currentPage, sortByName]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setValues({ ...values, [name]: value.trim() });
+    const {name, value} = e.target;
+    setValues({...values, [name]: value.trim()});
   };
 
   const getOneStaff = async (id) => {
@@ -94,7 +87,7 @@ const ManageCustomer = () => {
       return;
     }
 
-    if (values.email){
+    if (values.email) {
       const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!regex.test(values.email)) {
         toast.error("Email không đúng định dạng");
@@ -158,7 +151,115 @@ const ManageCustomer = () => {
 
   console.log(values);
   return (
-    <div className="manage-user auto">
+    <div className="p-4 bg-gray-100 w-full">
+      <div className="bg-white border rounded-lg">
+        <div className="flex items-center justify-between p-4">
+          <p className="text-2xl text-gray-800 font-semibold">Nhân viên</p>
+          <div className="flex gap-x-4">
+            <div
+              onClick={() => {
+                setValues({
+                  username: "",
+                  email: "",
+                  phone: "",
+                  addressDetails: "",
+                  password: "",
+                  roleId: "STAFF",
+                });
+                setShow(true);
+                setEdit(false);
+              }}
+              className="add-user"
+            >
+              <Button>
+                <i className="fa-solid fa-circle-plus"></i> Tạo tài khoản
+              </Button>
+            </div>
+            <div
+              className="filter-user"
+              style={{color: "black"}}
+              onClick={() => {
+                setSortByName(!sortByName);
+              }}
+            >
+              Lọc
+              <BiMenuAltLeft/>
+            </div>
+          </div>
+        </div>
+        <table className="min-w-full text-sm text-left text-gray-700 border-b">
+          <thead className="bg-gray-100 text-gray-900">
+          <tr>
+            <th className="px-4 py-3 font-semibold text-base">STT</th>
+            <th className="px-4 py-3 font-semibold text-base">Họ Tên</th>
+            <th className="px-4 py-3 font-semibold text-base">Email</th>
+            <th className="px-4 py-3 font-semibold text-base">Số điện thoại</th>
+            <th className="px-4 py-3 font-semibold text-base">Chức vụ</th>
+            <th className="px-4 py-3 font-semibold text-base">Trạng Thái</th>
+            <th className="px-4 py-3 font-semibold text-base">Hành Động</th>
+          </tr>
+          </thead>
+          <tbody>
+          {getAllCustomer?.length > 0 &&
+            getAllCustomer?.map((item, index) => {
+              return (
+                <tr key={item.id}>
+                  <td className="px-4 py-3">
+                    {currentPage * currentLimit - currentLimit + index + 1}
+                  </td>
+                  <td className="px-4 py-3">{item?.username}</td>
+                  <td className="px-4 py-3">{item?.email}</td>
+                  <td className="px-4 py-3">{item?.phone}</td>
+                  <td className="px-4 py-3">{item?.roleId === "STAFF" ? "Nhân viên" : "Admin"}</td>
+                  <td className="px-4 py-3">{item?.status}</td>
+                  <td className="px-4 py-3 flex items-center gap-2">
+                    <button
+                      className="mx-3 btn btn-primary"
+                      onClick={() => {
+                        getOneStaff(item?.id);
+                        setShow(true);
+                        setEdit(true);
+                      }}
+                    >
+                      <BiEdit/>
+                    </button>
+                    <button
+                      className="btn btn-danger"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleDelete(item?.id);
+                      }}
+                    >
+                      <AiFillDelete/>
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+        <div className="col-12 bg-gray-50 flex justify-end items-center py-3 px-4">
+          <ReactPaginate
+            breakLabel="..."
+            nextLabel=" >"
+            onPageChange={handlePageClick}
+            pageRangeDisplayed={3}
+            marginPagesDisplayed={4}
+            pageCount={totalPages}
+            previousLabel="< "
+            pageClassName="page-item"
+            pageLinkClassName="page-link"
+            previousLinkClassName="page-link"
+            nextClassName="page-item"
+            nextLinkClassName="page-link"
+            breakClassName="page-item"
+            breakLinkClassName="page-link"
+            containerClassName="pagination"
+            activeClassName="active"
+          />
+        </div>
+
+      </div>
       <div
         className={`${
           show ? "opacity-100 visible" : "opacity-0 invisible"
@@ -239,109 +340,7 @@ const ManageCustomer = () => {
           </div>
         </div>
       </div>
-      <Nav />
-      <div className="content-user">
-        <div className="title-user">
-          <div
-            onClick={() => {
-              setValues({
-                username: "",
-                email: "",
-                phone: "",
-                addressDetails: "",
-                password: "",
-                roleId: "STAFF",
-              });
-              setShow(true);
-              setEdit(false);
-            }}
-            className="add-user"
-          >
-            <Button>
-              <i className="fa-solid fa-circle-plus"></i> Tạo tài khoản
-            </Button>
-          </div>
-          <div
-            className="filter-user"
-            style={{ color: "black" }}
-            onClick={() => {
-              setSortByName(!sortByName);
-            }}
-          >
-            Lọc
-            <BiMenuAltLeft />
-          </div>
-        </div>
-        <Table bordered hover>
-          <thead>
-            <tr>
-              <th>STT</th>
-              <th>Họ Tên </th>
-              <th>Email</th>
-              <th>Số điện thoại</th>
-              <th>Chức vụ</th>
-              <th>Trạng Thái</th>
-              <th>Hành Động</th>
-            </tr>
-          </thead>
-          <tbody>
-            {getAllCustomer?.length > 0 &&
-              getAllCustomer?.map((item, index) => {
-                return (
-                  <tr key={item.id}>
-                    <td>
-                      {currentPage * currentLimit - currentLimit + index + 1}
-                    </td>
-                    <td>{item?.username}</td>
-                    <td>{item?.email}</td>
-                    <td>{item?.phone}</td>
-                    <td>{item?.roleId === "STAFF" ? "Nhân viên" : "Admin"}</td>
-                    <td>{item?.status}</td>
-                    <td>
-                      <button
-                        className="mx-3 btn btn-primary"
-                        onClick={() => {
-                          getOneStaff(item?.id);
-                          setShow(true);
-                          setEdit(true);
-                        }}
-                      >
-                        <BiEdit />
-                      </button>
-                      <button
-                        className="btn btn-danger"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          handleDelete(item?.id);
-                        }}
-                      >
-                        <AiFillDelete />
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-          </tbody>
-        </Table>
-        <ReactPaginate
-          breakLabel="..."
-          nextLabel=" >"
-          onPageChange={handlePageClick}
-          pageRangeDisplayed={3}
-          marginPagesDisplayed={4}
-          pageCount={totalPages}
-          previousLabel="< "
-          pageClassName="page-item"
-          pageLinkClassName="page-link"
-          previousLinkClassName="page-link"
-          nextClassName="page-item"
-          nextLinkClassName="page-link"
-          breakClassName="page-item"
-          breakLinkClassName="page-link"
-          containerClassName="pagination"
-          activeClassName="active"
-        />
-      </div>
+
     </div>
   );
 };

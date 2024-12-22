@@ -107,7 +107,7 @@ const ProfileMenu = ({openProfile, setOpenProfile}) => (
 
 const LoginButton = () => (
     <NavLink to="/login">
-        <button className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
+        <button className="bg-purple-600 hover:bg-purple-700 text-sm text-white font-bold py-2 px-4 rounded">
             Đăng nhập
         </button>
     </NavLink>

@@ -1,123 +1,68 @@
-import React from "react";
-import "./Footer.scss";
-import { Link } from "react-router-dom";
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { FaFacebook, FaInstagram, FaEnvelope, FaMapMarkerAlt, FaPhone } from 'react-icons/fa';
 
-function Footer(props) {
+const Footer = () => {
   return (
-    <footer className="bg-light text-dark pt-5 pb-4">
-      <div className="container md:text-center text-left">
-        <div className="row md:text-center text-left">
-          <div className="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
-            <h5 className="text-uppercase mb-4 font-weight-bold text-info">
-              SHOES
-            </h5>
-            <hr className="mb-4" />
-            <p>chuyen ban giay</p>
+    <footer className={`bg-gray-100 dark:bg-gray-800 text-gray-600 pt-10 pb-6 transition-colors duration-300 mt-28`}>
+      <div className="container mx-auto px-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="space-y-4">
+            <h5 className="text-xl font-bold text-indigo-300 uppercase">SHOES</h5>
+            <p className="text-gray-100">Chuyên bán giày</p>
           </div>
 
-          <div className="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
-            <h5 className="text-uppercase mb-4 font-weight-bold text-info">
-              Về chúng tôi
-            </h5>
-            <hr className="mb-4" />
-            <p>
-              <Link to="" className="text-dark">
-                Giới thiệu
-              </Link>
-            </p>
-            <p>
-              <Link to="" className="text-dark">
-                Điều khoản sử dụng
-              </Link>
-            </p>
-            <p>
-              <Link to="" className="text-dark"></Link>
-            </p>
-            <p>
-              <Link to="" className="text-dark"></Link>
-            </p>
-          </div>
-
-          <div className="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
-            <h5 className="text-uppercase mb-4 font-weight-bold text-info">
-              Chính sách
-            </h5>
-            <hr className="mb-4" />
-            <p>
-              <Link to="" className="text-dark">
-                Chính sách bảo hành & đổi trả
-              </Link>
-            </p>
-            <p>
-              <Link to="" className="text-dark">
-                Chính sách vận chuyển
-              </Link>
-            </p>
-            <p>
-              <Link to="" className="text-dark">
-                Chính sách thanh toán
-              </Link>
-            </p>
-            <p>
-              <Link to="" className="text-dark">
-                Chính sách bảo mật
-              </Link>
-            </p>
-          </div>
-
-          <div className="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
-            <h5 className="text-uppercase mb-4 font-weight-bold text-info">
-              Thông tin liên hệ
-            </h5>
-            <hr className="mb-4" />
-            <p>
-              <i className="fas fa-home mr-3"></i> 177 Cầu diễn ,Từ Liên, hà Nội
-            </p>
-            <p>
-              <i className="fas fa-envelope mr-3"></i> admin@gmail.com
-            </p>
-            <p>
-              <i className="fas fa-phone mr-3"></i> 0336909524
-            </p>
-          </div>
-
-          <hr className="mb-4" />
-          <div className="row d-flex justify-content-center">
-            <div>
-              <p>
-                Copyright 2023 All Rights Reserved By:
-                <Link to="" className="text-dark">
-                  <strong className="text-info"> Shoe store</strong>
-                </Link>
-              </p>
+          <div className="space-y-4">
+            <h5 className="text-xl font-bold text-indigo-300 uppercase">Về chúng tôi</h5>
+            <div className="space-y-3">
+              <div><Link to="/about" className="hover:text-indigo-600 text-gray-100 transition-colors">Giới thiệu</Link></div>
+              <div><Link to="/terms" className="hover:text-indigo-600 text-gray-100 transition-colors">Điều khoản sử dụng</Link></div>
             </div>
           </div>
 
-          <div className="row d-flex justify-content-center">
-            <div className="text-center">
-              <ul className="list-unstyled list-inline">
-                <li className="list-inline-item">
-                  <Link to="" className="text-dark">
-                    <i className="fab fa-facebook"></i>
-                  </Link>
-                </li>
-                <li className="list-inline-item">
-                  <Link to="" className="text-dark">
-                    <i className="fab fa-instagram"></i>
-                  </Link>
-                </li>
-                <li className="list-inline-item">
-                  <Link to="" className="text-dark">
-                    <i className="fab fa-google-plus"></i>
-                  </Link>
-                </li>
-              </ul>
+          <div className="space-y-4">
+            <h5 className="text-xl font-bold text-indigo-300 uppercase">Chính sách</h5>
+            <div className="space-y-3">
+              <div><Link to="/warranty" className="hover:text-indigo-600 text-gray-100 transition-colors">Chính sách bảo hành & đổi trả</Link></div>
+              <div><Link to="/shipping" className="hover:text-indigo-600 text-gray-100 transition-colors">Chính sách vận chuyển</Link></div>
+              <div><Link to="/payment" className="hover:text-indigo-600 text-gray-100 transition-colors">Chính sách thanh toán</Link></div>
+              <div><Link to="/privacy" className="hover:text-indigo-600 text-gray-100 transition-colors">Chính sách bảo mật</Link></div>
             </div>
+          </div>
+
+          <div className="space-y-4">
+            <h5 className="text-xl font-bold text-indigo-300 uppercase">Thông tin liên hệ</h5>
+            <div className="space-y-3">
+              <div className="flex items-center text-gray-100"><FaMapMarkerAlt className="mr-2 text-gray-100" /> 177 Cầu diễn, Từ Liêm, Hà Nội</div>
+              <div className="flex items-center text-gray-100"><FaEnvelope className="mr-2 text-gray-100" /> admin@gmail.com</div>
+              <div className="flex items-center text-gray-100"><FaPhone className="mr-2 text-gray-100" /> 0336909524</div>
+            </div>
+          </div>
+        </div>
+
+        <hr className="my-8 border-gray-300 dark:border-gray-600" />
+
+        <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+          <p className="text-sm">
+            Copyright 2024 All Rights Reserved By:{' '}
+            <Link to="/" className="font-bold text-indigo-600 hover:underline">
+              Shoe Store
+            </Link>
+          </p>
+
+          <div className="flex space-x-4">
+            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="text-gray-600 hover:text-indigo-600 transition-colors">
+              <FaFacebook size={24} />
+            </a>
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="text-gray-600 hover:text-indigo-600 transition-colors">
+              <FaInstagram size={24} />
+            </a>
           </div>
         </div>
       </div>
     </footer>
   );
-}
+};
 
 export default Footer;
+

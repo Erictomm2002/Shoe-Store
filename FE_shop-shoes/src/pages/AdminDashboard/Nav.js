@@ -2,7 +2,9 @@ import React from "react";
 import "./Nav.scss";
 
 const Nav = () => {
-  return <div className="title-nav bg-[#334155]">Bảng điều khiển</div>;
+  return <div>
+    <p className="font-semibold text-3xl text-gray-800">Bảng điền khiển</p>
+  </div>;
 };
 
 export default Nav;

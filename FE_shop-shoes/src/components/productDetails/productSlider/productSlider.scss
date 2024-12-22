@@ -1,58 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 .product-images-slider {
-    height: 540px;
+    @apply relative bg-white;
+
     .swiper-slide {
-        // height: inherit;
-        position: relative;
-        background-color: #fff;
+        @apply relative bg-white;
 
         img {
-            top: 0;
-            left: 0;
-            width: 100%;
-            aspect-ratio: 16/13 !important;
-            object-fit: cover;
+            @apply w-full h-auto object-cover rounded-lg shadow;
+            aspect-ratio: 16/13;
         }
+    }
+
+    .swiper-button-prev,
+    .swiper-button-next {
+        @apply absolute top-1/2 transform -translate-y-1/2 text-gray-700 hover:scale-110 transition-transform;
     }
 
     .swiper-button-prev {
-        left: 30;
-        color: rgb(255, 255, 255);
+        @apply left-4;
     }
 
     .swiper-button-next {
-        right: 30;
-        color: rgb(255, 255, 255);
+        @apply right-4;
     }
 }
 
-.product-images-slider-thumbs {
-    .swiper-slide {
-        cursor: pointer;
-        border: 1px solid #dddbdb;
-        
-        &-thumb-active {
-            border-color: #ff02f2;
-        }
-    }
+.product-thumbs {
+    @apply mt-4;
 
-    &-wrapper {
-        width: 100%;
-        // padding-top: 65%;
-        // overflow: hidden;
-        position: relative;
+    .swiper-slide {
+        @apply cursor-pointer border border-gray-200 rounded-lg overflow-hidden;
+
+        &-thumb-active {
+            @apply border-indigo-500;
+        }
 
         img {
-            // position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            object-fit: cover;
-            aspect-ratio: 16/13 !important;
+            @apply w-full h-24 object-cover;
         }
-    }
-
-    .product-images-slider-thumbs-wrapper{
-        height: 120px;
     }
 }
 

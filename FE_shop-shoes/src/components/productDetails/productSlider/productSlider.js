@@ -4,10 +4,11 @@ import { Navigation, Thumbs } from "swiper/modules";
 import PropTypes from "prop-types";
 import "./productSlider.scss";
 
-const ProductSlider = (props) => {
+const ProductSlider = ({ images }) => {
   const [activeThumb, setActiveThumb] = useState();
+
   return (
-    <>
+    <div className="w-full max-w-2xl mx-auto">
       <Swiper
         loop={true}
         spaceBetween={10}
@@ -15,11 +16,11 @@ const ProductSlider = (props) => {
         modules={[Navigation, Thumbs]}
         grabCursor={true}
         thumbs={{ swiper: activeThumb }}
-        className="product-images-slider"
+        className="mb-4"
       >
-        {props.images.map((item, index) => (
+        {images.map((item, index) => (
           <SwiperSlide key={index}>
-            <img src={item} alt="product images" />
+            <img src={item} alt={`product image ${index + 1}`} className="w-full h-auto object-cover rounded-lg" />
           </SwiperSlide>
         ))}
       </Swiper>
@@ -29,17 +30,17 @@ const ProductSlider = (props) => {
         spaceBetween={10}
         slidesPerView={4}
         modules={[Navigation, Thumbs]}
-        className="product-images-slider-thumbs"
+        className="product-thumbs"
       >
-        {props.images.map((item, index) => (
+        {images.map((item, index) => (
           <SwiperSlide key={index}>
-            <div className="product-images-slider-thumbs-wrapper">
-              <img src={item} alt="product images" className="!aspect-square" />
+            <div className="cursor-pointer border border-gray-200 rounded-lg overflow-hidden">
+              <img src={item} alt={`product thumbnail ${index + 1}`} className="w-full h-24 object-cover" />
             </div>
           </SwiperSlide>
         ))}
       </Swiper>
-    </>
+    </div>
   );
 };
 
@@ -48,3 +49,4 @@ ProductSlider.propTypes = {
 };
 
 export default ProductSlider;
+
