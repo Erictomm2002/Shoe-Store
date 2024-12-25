@@ -62,7 +62,8 @@ const ProductDetails = () => {
       const res = await getOneProduct(id);
       if (res && res.errCode === 0) {
         setGetProduct(res.DT);
-        setProduct(prev => ({ ...prev, productId: parseInt(id) }));
+        console.log( res.DT.inventory[0])
+        setProduct(prev => ({ ...prev, productId: parseInt(id), sizeId: res.DT.inventory[0].sizeId}));
       } else {
         toast.error(res.errMessage);
       }
@@ -203,14 +204,14 @@ const ProductDetails = () => {
               <div className="mb-8">
                 <h2 className="text-lg font-medium mb-2">Số lượng</h2>
                 <div className="flex items-center space-x-4">
-                  <button
+                  <div
                     onClick={() => setProduct(prev => ({...prev, quantity: Math.max(1, prev.quantity - 1)}))}
                     className="p-2 rounded-full hover:bg-gray-300"
                   >
                     <MinusCircleIcon className="w-6 h-6 text-indigo-600"/>
-                  </button>
+                  </div>
                   <span className="text-xl font-semibold">{product.quantity}</span>
-                  <button
+                  <div
                     onClick={() => {
                       const maxQuantity = getProduct.inventory.find(item => item.sizeId === product.sizeId)?.quantityInStock || 0;
                       setProduct(prev => ({...prev, quantity: Math.min(maxQuantity, prev.quantity + 1)}));
@@ -218,7 +219,7 @@ const ProductDetails = () => {
                     className="p-2 rounded-full hover:bg-gray-300"
                   >
                     <PlusCircleIcon className="w-6 h-6 text-indigo-600"/>
-                  </button>
+                  </div>
                 </div>
               </div>
               <div className="flex space-x-4">

@@ -55,6 +55,7 @@ function Review({ userId, productId }) {
     let res = await reviewProduct(review);
     if (res && res.errCode === 0) {
       toast.success("Đánh giá thành công");
+      window.location.reload();
     } else {
       toast.error(res.errMessage);
     }

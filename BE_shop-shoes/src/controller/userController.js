@@ -44,6 +44,7 @@ const handleRegister = async (req, res) => {
 const handleLogin = async (req, res) => {
   try {
     let data = await userService.handleUserLogin(req.body);
+    console.log(data)
     return res.status(200).json({
       errCode: data.errCode,
       errMessage: data.errMessage,

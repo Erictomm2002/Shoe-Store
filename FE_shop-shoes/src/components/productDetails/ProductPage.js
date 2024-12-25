@@ -56,6 +56,7 @@ const ProductPage = () => {
   }, [currentPage, supplierActive, filterPrice, filterSize]);
 
   const getAllProducts = async () => {
+    console.log(filterSize)
     try {
       const res = await getAllProduct(
         currentPage,
@@ -98,9 +99,11 @@ const ProductPage = () => {
   };
 
   const handleFilterSize = (size) => {
-    setFilterSize(prev =>
-      prev.includes(size) ? prev.filter(s => s !== size) : [...prev, size]
-    );
+    if (filterSize?.includes(size)) {
+      setFilterSize(filterSize.filter((item) => item !== size));
+    } else {
+      setFilterSize([...filterSize, size]);
+    }
   };
 
   return (
@@ -177,13 +180,13 @@ const ProductPage = () => {
               >
                 <p className="font-bold text-xl text-gray-800 mb-4 bg-white text-start">Kích thước</p>
                 <div className="grid grid-cols-3 gap-4">
-                  {[36, 37, 38, 39, 40, 41, 42].map((size) => (
+                  {[36, 37, 38, 39, 40, 41, 42].map((size, index) => (
                     <div key={size} className="flex items-center">
                       <input
                         type="checkbox"
                         id={`size-${size}`}
                         className="mr-3 focus:ring-2 focus:ring-blue-400 text-blue-500 border-gray-300"
-                        onChange={() => handleFilterSize(size)}
+                        onChange={() => handleFilterSize(index)}
                       />
                       <label htmlFor={`size-${size}`}
                              className="text-sm text-gray-600 hover:text-blue-600 transition-colors duration-200">

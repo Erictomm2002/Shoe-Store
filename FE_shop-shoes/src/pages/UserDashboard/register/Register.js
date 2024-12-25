@@ -24,6 +24,7 @@ function Register(props) {
   const [objCheckInput, setObjCheckInput] = useState(defaultValidInput);
 
   const isValidation = () => {
+    console.log(username)
     setObjCheckInput(defaultValidInput);
     if (!username) {
       setObjCheckInput({ ...defaultValidInput, isValidUserName: false });
@@ -62,6 +63,7 @@ function Register(props) {
 
   const handleRegister = async () => {
     let check = isValidation();
+
 
     if (check === true) {
       let response = await createNewUser(username, email, password);
@@ -149,13 +151,12 @@ function Register(props) {
                 />
               </div>
               <div className="d-grid">
-                <button
-                  type="submit"
-                  className="py-2 rounded-md bg-indigo-600 text-white"
+                <div
+                  className="py-2 rounded-md bg-indigo-600 text-white text-center text-base"
                   onClick={() => handleRegister()}
                 >
                   Đăng Ký
-                </button>
+                </div>
               </div>
               <p className="text-end mt-2">
                 Bạn đã có tài khoản?

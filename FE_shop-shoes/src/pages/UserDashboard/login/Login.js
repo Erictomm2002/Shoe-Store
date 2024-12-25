@@ -110,13 +110,13 @@ function Login(props) {
                 </Link>
               </div>
               <div className="d-grid">
-                <button
+                <div
                   type="submit"
-                  className="bg-indigo-600 py-2.5 text-white rounded-md"
+                  className="bg-indigo-600 py-2.5 text-white rounded-md text-center"
                   onClick={() => handleLogin()}
                 >
                   Đăng nhập
-                </button>
+                </div>
               </div>
               <p className="mt-2 text-end">
                 Bạn chưa có tài khoản?

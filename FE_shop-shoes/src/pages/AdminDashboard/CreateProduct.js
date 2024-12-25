@@ -14,6 +14,25 @@ const CreateProduct = () => {
   const {id} = useParams();
 
   const [user, setUser] = useState({});
+  const [selectItems, setSelectedItems] = useState([]);
+  const [quantityInStock, setquantityInStock] = useState([]);
+
+  const [shoeSize, setShoeSize] = useState([]);
+  const [listSupplier, setListSupplier] = useState([]);
+  const [description, setDescription] = useState("");
+
+  const [product, setProduct] = useState({
+    productId: null,
+    userId: user?.id,
+    productName: "",
+    image: "",
+    images: "",
+    // description: "",
+    discount: null,
+    supplier: null,
+    price: "",
+  });
+
   useEffect(() => {
     // Kiểm tra xem có thông tin người dùng trong Local Storage không
     const storedUser = localStorage.getItem("user");
@@ -46,24 +65,9 @@ const CreateProduct = () => {
       fetchOneProduct();
     }
   }, [id]);
-  const [selectItems, setSelectedItems] = useState([]);
-  const [quantityInStock, setquantityInStock] = useState([]);
 
-  const [shoeSize, setShoeSize] = useState([]);
-  const [listSupplier, setListSupplier] = useState([]);
-  const [description, setDescription] = useState("");
+  console.log(id);
 
-  const [product, setProduct] = useState({
-    productId: null,
-    userId: user?.id,
-    productName: "",
-    image: "",
-    images: "",
-    // description: "",
-    discount: null,
-    supplier: null,
-    price: "",
-  });
 
   const handleReset = () => {
     console.log(quantityInStock);
@@ -204,10 +208,13 @@ const CreateProduct = () => {
         : await createProduct(productData);
       console.log(res);
       if (res && res.errCode === 0) {
-        id
-          ? toast.success("Sửa sản phẩm thành công")
-          : toast.success("Tạo sản phẩm thành công");
-        handleReset();
+        if (id){
+          toast.success("Sửa sản phẩm thành công")
+        }
+        else {
+          toast.success("Tạo sản phẩm thành công");
+          handleReset();
+        }
       } else {
         toast.error(res.errMessage);
       }
@@ -237,7 +244,7 @@ const CreateProduct = () => {
             <input
               type="text"
               placeholder="Nhập tên sản phẩm"
-              className="w-[500px] max-w-md block border border-gray-300 rounded-md px-3 py-2 placeholder:text-sm"
+              className="w-[500px] max-w-md block border border-gray-300 rounded-md px-3 py-2 placeholder:text-sm text-gray-700"
               value={product.productName}
               onChange={(e) =>
                 handleOnchangeProduct(e.target.value, "productName")
@@ -252,7 +259,7 @@ const CreateProduct = () => {
             <input
               type="text"
               placeholder="Nhập giá sản phẩm"
-              className="w-[500px] max-w-md block border border-gray-300 rounded-md px-3 py-2 placeholder:text-sm"
+              className="w-[500px] max-w-md block border border-gray-300 rounded-md px-3 py-2 placeholder:text-sm text-gray-700"
               value={product.price}
               onChange={(e) => handleOnchangeProduct(e.target.value, "price")}
             />
@@ -264,7 +271,7 @@ const CreateProduct = () => {
             <input
               type="text"
               placeholder="Nhập phần trăm giảm giá"
-              className="w-[500px] max-w-md block border border-gray-300 rounded-md px-3 py-2 placeholder:text-sm"
+              className="w-[500px] max-w-md block border border-gray-300 rounded-md px-3 py-2 placeholder:text-sm text-gray-700"
               value={product.discount}
               onChange={(e) => {
                 if (e.target.value > 99) {
@@ -280,7 +287,7 @@ const CreateProduct = () => {
               Nhà cung cấp <span className="star">*</span>
             </label>
             <select
-              className="w-[500px] max-w-md block border border-gray-300 rounded-md px-3 py-2 placeholder:text-sm"
+              className="w-[500px] max-w-md block border border-gray-300 rounded-md px-3 py-2 placeholder:text-sm text-gray-700"
               value={product?.supplier}
               onChange={(e) =>
                 handleOnchangeProduct(e.target.value, "supplier")
@@ -418,27 +425,29 @@ const CreateProduct = () => {
               multiple
             >
               {({getRootProps, getInputProps}) => (
-                <div {...getRootProps()} className="w-full h-56 bg-stone-100 rounded-xl">
+                <div {...getRootProps()} className="w-full min-h-56 bg-stone-100 rounded-xl">
                   <input {...getInputProps()} />
                   {product?.images.length > 0 ? (
-                    product?.images.map((base64Image, index) => (
-                      // eslint-disable-next-line jsx-a11y/img-redundant-alt
-                      <img
-                        key={index}
-                        src={base64Image}
-                        alt="Selected Image"
-                        style={{
-                          width: "150px",
-                          height: "150px",
-                          objectFit: "cover",
-                          margin: "6px",
-                        }}
-                        value={product.multipleImage}
-                        onChange={(e) =>
-                          handleOnchangeProduct(e.target.value, "multipleImage")
-                        }
-                      />
-                    ))
+                    <div className="flex gap-x-1 flex-wrap">
+                      {product?.images.map((base64Image, index) => (
+                        // eslint-disable-next-line jsx-a11y/img-redundant-alt
+                        <img
+                          key={index}
+                          src={base64Image}
+                          alt="Selected Image"
+                          style={{
+                            width: "150px",
+                            height: "150px",
+                            objectFit: "cover",
+                            margin: "6px",
+                          }}
+                          value={product.multipleImage}
+                          onChange={(e) =>
+                            handleOnchangeProduct(e.target.value, "multipleImage")
+                          }
+                        />
+                      ))}
+                    </div>
                   ) : (
                     <div className="h-full flex justify-center items-center">
                       <p className="text-gray-500 text-xl italic">Kéo và thả ảnh hoặc click để chọn ảnh</p>
@@ -451,7 +460,7 @@ const CreateProduct = () => {
         </form>
         <div className="col-12 bg-gray-100 flex justify-center items-center py-3">
           <button
-            className="py-2 px-6 rounded-md bg-indigo-600"
+            className="py-2 px-6 text-base rounded-md bg-indigo-600"
             type="submit"
             onClick={(e) => handleSubmitProduct(e)}
           >

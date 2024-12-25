@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import React, { useEffect, useState } from "react";
 import "./SideBar.scss";
 import { FaBars } from "react-icons/fa";
-import { NavLink, Outlet } from "react-router-dom";
+import {NavLink, Outlet, useNavigate} from "react-router-dom";
 import Sidebar from "./Sidebar";
 import { routes } from "../../assets/data/menu";
 import { memo } from "react";
@@ -11,6 +11,7 @@ import { logout } from "../../utils/utils";
 const AdminLayout = ({ children }) => {
   const [isOpen, setOpen] = useState(false);
   const [user, setUser] = useState({});
+  const navigate = useNavigate();
 
   const slug = window.location.pathname;
 
@@ -23,14 +24,20 @@ const AdminLayout = ({ children }) => {
   useEffect(() => {
     // Kiểm tra xem có thông tin người dùng trong Local Storage không
     const storedUser = localStorage.getItem("user");
-    //
-    // if (!storedUser) {
-    //   window.location.href = "/login";
-    // }
-    // // Nếu có, chuyển đổi chuỗi JSON thành đối tượng và cập nhật state
-    // if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    // }
+
+    if (!storedUser) {
+      window.location.href = "/login";
+    }
+    // Nếu có, chuyển đổi chuỗi JSON thành đối tượng và cập nhật state
+    if (storedUser) {
+      const currentUser = JSON.parse(storedUser);
+      if (currentUser.roleId === "ADMIN") {
+        setUser(JSON.parse(storedUser));
+      }
+      else {
+        navigate("/")
+      }
+    }
   }, []);
   const toggle = () => setOpen(!isOpen);
 

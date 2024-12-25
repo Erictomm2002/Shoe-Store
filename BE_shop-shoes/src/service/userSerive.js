@@ -5,6 +5,7 @@ import { Op } from "sequelize";
 const salt = bcrypt.genSaltSync(10);
 
 const hashUserPassword = (userPassword) => {
+  console.log("Hasshhh");
   let hashPassword = bcrypt.hashSync(userPassword, salt);
   return hashPassword;
 };
@@ -61,6 +62,8 @@ const registerNewUser = async (rawUserData) => {
       };
     }
 
+    console.log(rawUserData.password)
+
     //hash user password
     let hashPassword = hashUserPassword(rawUserData.password);
 
@@ -95,6 +98,7 @@ const checkPassword = (inputPassword, hashPassword) => {
 };
 
 const handleUserLogin = async (rawData) => {
+  console.log("rawData: ", rawData);
   try {
     let user = await db.User.findOne({
       where: {
@@ -130,18 +134,19 @@ const handleUserLogin = async (rawData) => {
         };
       }
     }
-
-    console.log(
-      ">>> Not found user with email/username: ",
-      rawData.valueLogin,
-      "password:",
-      rawData.password
-    );
-    return {
-      errCode: 1,
-      errMessage: "Email hoặc mật khẩu không chính xác!",
-      DT: "", //data
-    };
+    else {
+      console.log(
+        ">>> Not found user with email/username: ",
+        rawData.valueLogin,
+        "password:",
+        rawData.password
+      );
+      return {
+        errCode: 1,
+        errMessage: "Email hoặc mật khẩu không chính xác!",
+        DT: "", //data
+      };
+    }
   } catch (error) {
     return res.status(500).json({
       errCode: -1,

@@ -77,7 +77,6 @@ const InfoAccount = () => {
           <h2 className="text-3xl text-center font-bold mb-6">Quản lý tài khoản</h2>
 
           <div className="bg-white shadow-xl rounded mb-4">
-
             <div className="">
               <p className="px-8 pt-4 -mb-2 pb-3 border-b font-semibold text-2xl">Thông tin cá nhân</p>
               <form className="space-y-4 max-w-xl p-8">
@@ -214,7 +213,7 @@ const InfoAccount = () => {
             </div>
           </div>
 
-          <div className="overflow-x-auto mt-4 bg-white rounded-lg shadow-xl mb-4">
+          <div className="overflow-x-auto mt-4 bg-white rounded-lg shadow-xl mb-16">
             <p className="my-4 mx-8 text-2xl font-semibold">
               Lịch sử đặt hàng
             </p>
