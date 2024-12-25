@@ -31,6 +31,13 @@ const removeproductcart = (data) => {
     }
   );
 };
+
+const getProductBySearch = (search,page,limit) => {
+  return axios.get(`/api/v1/search?search=${search}&page=${page}&limit=${limit}`, {
+    withCredentials: true,
+  });
+}
+
 const removeallproductcart = (data) => {
   console.log(data);
   return axios.delete(`/api/v1/removeallproductcart?userId=${data?.userId}`, {
@@ -143,4 +150,5 @@ export {
   removeallproductcart,
   getDataManageAdmin,
   deleteOrder,
+  getProductBySearch
 };

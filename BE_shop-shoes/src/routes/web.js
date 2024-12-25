@@ -45,6 +45,7 @@ const initWebRoutes = (app) => {
   router.get("/product", productController.getAllProduct);
   router.get("/product/bestseller", productController.getProductBestSeller);
   router.get("/product/:id", productController.getOneProduct);
+  router.get("/search", productController.getProductBySearch);
   router.delete("/product/:id", productController.deleteProduct);
 
   //supplier

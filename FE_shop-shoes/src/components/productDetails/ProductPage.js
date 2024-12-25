@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import {Swiper, SwiperSlide} from "swiper/react";
 import ReactPaginate from "react-paginate";
 import {toast} from "react-toastify";
-import {getAllProduct} from "../../service/productService";
+import { getAllProduct, getProductBySearch } from "../../service/productService";
 import {fetchAllSupplierNoLimit} from "../../service/userService";
 import { motion } from 'framer-motion';
 
@@ -40,6 +40,8 @@ const ProductPage = () => {
   const [supplierActive, setSupplierActive] = useState("");
   const [filterPrice, setFilterPrice] = useState([0, 0]);
   const [filterSize, setFilterSize] = useState([]);
+  const [search, setSearch] = useState("");
+
 
   const [isOpenFilter, setIsOpenFilter] = useState(false);
   const slug = window.location.pathname.split("/")[2];
@@ -52,7 +54,9 @@ const ProductPage = () => {
   }, [slug]);
 
   useEffect(() => {
-    getAllProducts();
+    if(search === ""){
+      getAllProducts();
+    }
   }, [currentPage, supplierActive, filterPrice, filterSize]);
 
   const getAllProducts = async () => {
@@ -106,6 +110,20 @@ const ProductPage = () => {
     }
   };
 
+  const handleSearchProduct = async () => {
+    let res = await getProductBySearch(search, currentPage, currentLimit);
+    if (res && res.errCode === 0) {
+      setGetProduct(res.DT);
+      setTotalPages(res.totalPages);
+    } else {
+      toast.error(res.errMessage);
+    }
+  }
+
+  const handleSearchChange = (event) => {
+    setSearch(event.target.value);
+  };
+
   return (
     <div>
       <div className="">
@@ -115,6 +133,25 @@ const ProductPage = () => {
           <div className="flex flex-col lg:items-start lg:flex-row gap-y-8 gap-x-10">
             {/* Sidebar */}
             <div className="w-full lg:w-1/4 lg:sticky lg:top-20 space-y-6 hidden lg:block">
+
+              <motion.div
+                className="bg-white rounded-lg p-6 shadow-md border border-gray-200"
+                initial={{opacity: 0, y: 20}}
+                animate={{opacity: 1, y: 0}}
+                transition={{duration: 0.5}}
+              >
+                <p className="font-bold text-xl text-gray-800 mb-2 bg-white text-start">Tìm kiếm</p>
+                <div className="space-y-2">
+                  <input
+                    type="text"
+                    onChange={(event) => handleSearchChange(event)}
+                    placeholder="Tìm kiếm theo sản phẩm"
+                    className="w-full p-2 border rounded-md"
+                  />
+                    <input type="submit" className="bg-gray-700 p-2 rounded-md text-white w-full" value="Tìm kiếm"
+                           onClick={handleSearchProduct}/>
+                </div>
+              </motion.div>
               {/* Brand Filter */}
               <motion.div
                 className="bg-white rounded-lg p-6 shadow-md border border-gray-200"
@@ -123,79 +160,79 @@ const ProductPage = () => {
                 transition={{duration: 0.5}}
               >
                 <p className="font-bold text-xl text-gray-800 mb-4 bg-white text-start">Thương hiệu</p>
-                <div className="space-y-3">
-                  {listSupplier?.map((item) => (
-                    <motion.div
-                      key={item?.id}
-                      className={`cursor-pointer capitalize transition-all duration-300 ease-in-out ${
-                        supplierActive === item?.name
-                          ? "text-blue-600 font-semibold"
-                          : "text-gray-600 hover:text-blue-600"
-                      }`}
-                      onClick={() =>
-                        setSupplierActive((prev) => (prev === item?.name ? "" : item?.name))
-                      }
-                      whileHover={{scale: 1.05}}
-                      whileTap={{scale: 0.95}}
-                    >
-                      {item?.name}
-                    </motion.div>
-                  ))}
-                </div>
-              </motion.div>
+                  <div className="space-y-3">
+                    {listSupplier?.map((item) => (
+                      <motion.div
+                        key={item?.id}
+                        className={`cursor-pointer capitalize transition-all duration-300 ease-in-out ${
+                          supplierActive === item?.name
+                            ? "text-blue-600 font-semibold"
+                            : "text-gray-600 hover:text-blue-600"
+                        }`}
+                        onClick={() =>
+                          setSupplierActive((prev) => (prev === item?.name ? "" : item?.name))
+                        }
+                        whileHover={{scale: 1.05}}
+                        whileTap={{scale: 0.95}}
+                      >
+                        {item?.name}
+                      </motion.div>
+                    ))}
+                  </div>
+                </motion.div>
 
-              {/* Price Filter */}
-              <motion.div
-                className="bg-white rounded-lg p-6 shadow-md border border-gray-200"
-                initial={{opacity: 0, y: 20}}
-                animate={{opacity: 1, y: 0}}
-                transition={{duration: 0.5, delay: 0.1}}
-              >
-                <p className="font-bold text-xl text-gray-800 mb-4 bg-white text-start">Giá</p>
-                <div className="space-y-3">
-                  {priceRanges.map((range) => (
-                    <div key={range.value} className="flex items-center">
-                      <input
-                        type="radio"
-                        id={`price-${range.value}`}
-                        name="price"
-                        className="mr-3 focus:ring-2 focus:ring-blue-400 text-blue-500 border-gray-300"
-                        onChange={() => handlePriceChange(range.minPrice, range.maxPrice)}
-                      />
-                      <label htmlFor={`price-${range.value}`}
-                             className="text-sm text-gray-600 hover:text-blue-600 transition-colors duration-200">
-                        {range.title}
-                      </label>
-                    </div>
-                  ))}
-                </div>
-              </motion.div>
+                {/* Price Filter */}
+                <motion.div
+                  className="bg-white rounded-lg p-6 shadow-md border border-gray-200"
+                  initial={{opacity: 0, y: 20}}
+                  animate={{opacity: 1, y: 0}}
+                  transition={{duration: 0.5, delay: 0.1}}
+                >
+                  <p className="font-bold text-xl text-gray-800 mb-4 bg-white text-start">Giá</p>
+                  <div className="space-y-3">
+                    {priceRanges.map((range) => (
+                      <div key={range.value} className="flex items-center">
+                        <input
+                          type="radio"
+                          id={`price-${range.value}`}
+                          name="price"
+                          className="mr-3 focus:ring-2 focus:ring-blue-400 text-blue-500 border-gray-300"
+                          onChange={() => handlePriceChange(range.minPrice, range.maxPrice)}
+                        />
+                        <label htmlFor={`price-${range.value}`}
+                               className="text-sm text-gray-600 hover:text-blue-600 transition-colors duration-200">
+                          {range.title}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
 
-              {/* Size Filter */}
-              <motion.div
-                className="bg-white rounded-lg p-6 shadow-md border border-gray-200"
-                initial={{opacity: 0, y: 20}}
-                animate={{opacity: 1, y: 0}}
-                transition={{duration: 0.5, delay: 0.2}}
-              >
-                <p className="font-bold text-xl text-gray-800 mb-4 bg-white text-start">Kích thước</p>
-                <div className="grid grid-cols-3 gap-4">
-                  {[36, 37, 38, 39, 40, 41, 42].map((size, index) => (
-                    <div key={size} className="flex items-center">
-                      <input
-                        type="checkbox"
-                        id={`size-${size}`}
-                        className="mr-3 focus:ring-2 focus:ring-blue-400 text-blue-500 border-gray-300"
-                        onChange={() => handleFilterSize(index)}
-                      />
-                      <label htmlFor={`size-${size}`}
-                             className="text-sm text-gray-600 hover:text-blue-600 transition-colors duration-200">
-                        {size}
-                      </label>
-                    </div>
-                  ))}
-                </div>
-              </motion.div>
+                {/* Size Filter */}
+                <motion.div
+                  className="bg-white rounded-lg p-6 shadow-md border border-gray-200"
+                  initial={{opacity: 0, y: 20}}
+                  animate={{opacity: 1, y: 0}}
+                  transition={{duration: 0.5, delay: 0.2}}
+                >
+                  <p className="font-bold text-xl text-gray-800 mb-4 bg-white text-start">Kích thước</p>
+                  <div className="grid grid-cols-3 gap-4">
+                    {[36, 37, 38, 39, 40, 41, 42].map((size, index) => (
+                      <div key={size} className="flex items-center">
+                        <input
+                          type="checkbox"
+                          id={`size-${size}`}
+                          className="mr-3 focus:ring-2 focus:ring-blue-400 text-blue-500 border-gray-300"
+                          onChange={() => handleFilterSize(index)}
+                        />
+                        <label htmlFor={`size-${size}`}
+                               className="text-sm text-gray-600 hover:text-blue-600 transition-colors duration-200">
+                          {size}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
             </div>
 
             {/* Main Content */}

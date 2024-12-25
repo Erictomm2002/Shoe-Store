@@ -133,6 +133,21 @@ const getDataManageAdmin = async (req, res) => {
     });
   }
 };
+
+const getProductBySearch = async (req, res) => {
+  try {
+    console.log("req.query: ", req.query);
+    const product = await productService.getProductBySearchService(req.query.search, req.query.page, req.query.limit);
+    return res.status(200).json(product);
+  } catch (e) {
+    return res.status(500).json({
+      errCode: "-1",
+      errMessage: "OK",
+      DT: e, //data
+    });
+  }
+};
+
 module.exports = {
   createProduct: createProduct,
   updateProduct: updateProduct,
@@ -142,4 +157,5 @@ module.exports = {
   getProductSale: getProductSale,
   getProductBestSeller: getProductBestSeller,
   getDataManageAdmin: getDataManageAdmin,
+  getProductBySearch: getProductBySearch,
 };
